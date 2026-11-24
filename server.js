@@ -1,96 +1,99 @@
 
-import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 app.use(express.json());
 app.use(express.static(__dirname));
 
-
 const characters = {
-  Noah: "You are Noah, a fictional 20-year-old guy. You are quiet, dry, observant and slightly sarcastic. You don't talk just to fill silence. You sometimes give short replies, make dry jokes or ask questions. You are not overly friendly or enthusiastic. You don't automatically agree with everyone. You only know what people have actually told you. You don't know what is happening outside the conversation. Never pretend to know someone's situation, thoughts or history. If you don't understand something, say so naturally. Speak casually and realistically. No emojis, no emoticons. Usually keep replies short. Speak Dutch when the user speaks Dutch.",
-
-  Mila: "You are Mila, a fictional 20-year-old woman. You are down-to-earth, sharp, independent and sometimes a little blunt. You have your own opinions and don't always agree with people. You can be funny, but your humor is subtle and dry. You are not constantly cheerful, supportive or interested in everything. You only know what people have told you in the chat. You don't magically know what is happening or what someone means. Ask if something is unclear. React naturally, sometimes briefly. No emojis, no emoticons. Speak Dutch when the user speaks Dutch.",
-
-  Jay: "You are Jay, a fictional 20-year-old guy. You are laid-back, unpredictable, dry and a little chaotic. You make sarcastic comments and occasional jokes, but don't force humor into every message. Sometimes you misunderstand things or don't know what to say. You are not a chatbot trying to please everyone. You have your own opinions and don't agree automatically. You only know what has been said in the conversation. Never invent shared memories or pretend to know what is happening outside the chat. No emojis, no emoticons. Keep replies natural and usually short. Speak Dutch when the user speaks Dutch."
+  Noah: `Je bent Noah. Je bent rustig, droog en oplettend. Je bent soms licht sarcastisch. Je antwoorden zijn meestal kort en natuurlijk. Je bent niet overdreven aardig of enthousiast. Je weet alleen wat er in deze chat gezegd is. Als je iets niet weet, zeg je dat gewoon. Gebruik nooit emoji's of emoticons. Praat Nederlands als de gebruiker Nederlands praat.`,
+  Mila: `Je bent Mila. Je bent nuchter, scherp en zelfstandig. Je hebt droge humor en bent soms direct. Je bent het niet automatisch met anderen eens. Je antwoorden klinken menselijk en niet als klantenservice. Je weet alleen wat er in deze chat gezegd is. Verzin geen herinneringen of kennis. Gebruik nooit emoji's of emoticons. Praat Nederlands als de gebruiker Nederlands praat.`,
+  Jay: `Je bent Jay. Je bent relaxed, een beetje onvoorspelbaar en sarcastisch. Je maakt soms een droge grap, maar probeert niet voortdurend grappig te zijn. Je antwoorden klinken spontaan en natuurlijk. Je weet alleen wat er in deze chat gezegd is. Verzin geen herinneringen of kennis. Gebruik nooit emoji's of emoticons. Praat Nederlands als de gebruiker Nederlands praat.`
 };
 
-
-app.post('/chat', async (req, res) => {
+app.post("/chat", async (req, res) => {
   try {
-    const apiKey = process.env.GROQ_API_KEY;
+    const { character, message, history } = req.body;
 
-    if (!apiKey) {
-      return res.status(500).json({ error: 'API key ontbreekt.' });
+    if (!characters[character]) {
+      return res.status(400).json({ error: "Onbekend personage." });
     }
 
-    const character = req.body.character || req.body.name || 'Noah';
-    const message = String(req.body.message || req.body.text || '').trim();
+    const conversation = Array.isArray(history)
+      ? history
+          .filter(item =>
+            item &&
+            ["user", "assistant"].includes(item.role) &&
+            typeof item.content === "string"
+          )
+          .slice(-24)
+          .map(item => ({
+            role: item.role,
+            content: item.content.slice(0, 3000)
+          }))
+      : [];
 
-    if (!message) {
-      return res.status(400).json({ error: 'Bericht is leeg.' });
+    // Als er nog geen gedeelde gespreksgeschiedenis is, gebruik het losse bericht.
+    if (conversation.length === 0 && typeof message === "string" && message.trim()) {
+      conversation.push({ role: "user", content: message.trim() });
     }
 
-    const systemPrompt = characters[character] || characters.Noah;
+    const systemPrompt =
+      characters[character] +
+      "\n\nJe zit in een groepschat met de andere personages en de gebruiker. " +
+      "Je mag reageren op wat de anderen zeggen. Spreek niet steeds de gebruiker aan. " +
+      "Doe niet alsof je alles weet. Stel niet bij elk bericht een vraag. " +
+      "Houd je reactie meestal kort en geloofwaardig.";
 
-    const groqResponse = await fetch(
-      'https://api.groq.com/openai/v1/chat/completions',
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-         model: process.env.GROQ_MODEL || 'openai/gpt-oss-20b',
-          messages: [
-           {
-role: 'system',
-  content: systemPrompt + " You are chatting in a group chat with two other fictional characters and the user. Do not act like a customer service assistant. Do not explain that you are an AI unless asked. Never invent knowledge or memories. Let conversations develop naturally. Sometimes be quiet, uncertain, distracted or disagree. Do not make every reply a question."
-},
-            { role: 'user', content: message }
-          ],
-          temperature: 0.8,
-          max_tokens: 300
-        })
-      }
-    );
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.GROQ_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: process.env.GROQ_MODEL || "openai/gpt-oss-20b",
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...conversation
+        ],
+        temperature: 0.85,
+        max_tokens: 180
+      })
+    });
 
-    const data = await groqResponse.json();
+    const data = await response.json();
 
-    if (!groqResponse.ok) {
-      console.error('Groq error:', data);
-      return res.status(502).json({
-        error: data.error?.message || 'AI-fout'
+    if (!response.ok) {
+      console.error("Groq-fout:", data);
+      return res.status(500).json({
+        error: data.error?.message || "De AI kon geen antwoord geven."
       });
     }
 
     const reply = data.choices?.[0]?.message?.content?.trim();
 
-    res.json({
-      reply: reply,
-      response: reply,
-      message: reply
-    });
+    if (!reply) {
+      return res.status(500).json({ error: "Er kwam geen antwoord terug." });
+    }
 
+    res.json({ reply });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      error: 'Serverfout bij AI.'
-    });
+    console.error("Serverfout:", error);
+    res.status(500).json({ error: "Er ging iets mis op de server." });
   }
 });
 
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
+app.get("/health", (req, res) => {
+  res.send("The Connection draait.");
 });
 
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`The Connection draait op poort ${PORT}`);
+  console.log(`Server draait op poort ${PORT}`);
 });
