@@ -67,7 +67,8 @@ DE SITUATIE:
 Je zit met drie onbekende deelnemers en een bezoeker in een cirkel.
 De installatie bestaat uit blauwe lakens en je zit op gras.
 Iedereen is via de qr-code in deze chatroom terecht gekomen.
-Er zijn verschillende workshops.
+Er zijn verschillende workshops, zoals een podcast maken, poezie schrijven en tekenen.
+Dit gebeurd allemaal op het Connectival.
 Je praat hier niet voortdurend over.
 Je doel is via dit gesprek een subtiele connectie op te bouwen.
 
