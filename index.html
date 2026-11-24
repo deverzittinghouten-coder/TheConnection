@@ -1,330 +1,305 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="nl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>The Connection</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>De installatie</title>
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-*{box-sizing:border-box}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-body{
-  margin:0;background:#101113;color:#f4f4f5;
-  font-family:Inter,system-ui,sans-serif
-}
-#app{
-  height:100dvh;max-width:760px;margin:0 auto;
-  display:flex;flex-direction:column;background:#111214;
-  border-left:1px solid #25262a;border-right:1px solid #25262a
-}
-.welcome{
-  flex:1;display:flex;align-items:center;justify-content:center;
-  flex-direction:column;padding:24px;
-  background:radial-gradient(ellipse at top,#25242a,#101113 65%)
-}
-.logo{font-size:34px;font-weight:700;letter-spacing:-1.5px}
-.logo span{color:#aa96ff}
-.subtitle{color:#8a8a91;font-size:12px;margin-top:8px}
-.welcome input{
-  width:100%;max-width:340px;margin-top:30px;
-  background:#191a1e;border:1px solid #33343a;border-radius:9px;
-  padding:14px;color:white;outline:none
-}
-.welcome input:focus{border-color:#aa96ff}
-.joinbtn{
-  width:100%;max-width:340px;margin-top:10px;
-  background:#aa96ff;border:0;border-radius:9px;
-  padding:14px;color:#19151f;font-weight:600;cursor:pointer
-}
-.chat{display:none;flex:1;min-height:0;flex-direction:column}
-.header{
-  height:62px;flex-shrink:0;display:flex;align-items:center;
-  padding:0 18px;border-bottom:1px solid #292a2e
-}
-.headname{font-size:15px;font-weight:600}
-.online{
-  width:7px;height:7px;border-radius:50%;
-  background:#75c79a;margin-left:9px
-}
-.messages{
-  padding:18px;display:flex;flex-direction:column;
-  gap:15px;overflow-y:auto;flex:1
-}
-.date{text-align:center;font-size:10px;color:#6f7077;margin-bottom:5px}
-.msg{
-  display:flex;flex-direction:column;gap:5px;
-  max-width:82%;align-self:flex-start
-}
-.msg.mine{align-self:flex-end}
-.sender{font-size:11px;color:#a2a2a9}
-.mine .sender{text-align:right}
-.bubble{
-  font-size:13px;line-height:1.55;background:#222328;
-  padding:10px 13px;border-radius:4px 13px 13px 13px;
-  overflow-wrap:anywhere;white-space:pre-wrap
-}
-.mine .bubble{
-  background:#594a7f;border-radius:13px 4px 13px 13px
-}
-.composer{
-  display:flex;gap:9px;padding:12px;
-  border-top:1px solid #292a2e;flex-shrink:0
-}
-.composer input{
-  flex:1;min-width:0;background:#1b1c20;
-  border:1px solid #303137;border-radius:25px;
-  padding:12px 15px;color:white;outline:none;font-size:13px
-}
-.send{
-  width:42px;height:42px;border-radius:50%;border:0;
-  background:#aa96ff;color:#19151f;font-size:20px;
-  font-weight:700;cursor:pointer
-}
-.typing{
-  font-size:11px;color:#777;
-  padding:0 16px 8px;min-height:17px
-}
-.disabled{opacity:.55;cursor:wait}
-</style>
+    body {
+      margin: 0;
+      background: #101820;
+      color: #eeeeee;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      padding: 22px 18px;
+      text-align: center;
+      background: #172631;
+      border-bottom: 1px solid #304653;
+    }
+
+    header h1 {
+      margin: 0 0 7px;
+      font-size: 20px;
+      font-weight: 500;
+    }
+
+    header p {
+      margin: 0;
+      color: #a9bdc8;
+      font-size: 13px;
+    }
+
+    #chat {
+      max-width: 750px;
+      height: calc(100vh - 150px);
+      margin: 0 auto;
+      padding: 22px 16px;
+      overflow-y: auto;
+    }
+
+    .message {
+      margin-bottom: 20px;
+      max-width: 85%;
+    }
+
+    .message .name {
+      margin-bottom: 5px;
+      color: #91b9d0;
+      font-size: 12px;
+    }
+
+    .message .bubble {
+      padding: 12px 15px;
+      border-radius: 14px;
+      background: #243743;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .message.me {
+      margin-left: auto;
+    }
+
+    .message.me .name {
+      text-align: right;
+      color: #b5c6d0;
+    }
+
+    .message.me .bubble {
+      background: #31536a;
+    }
+
+    #typing {
+      max-width: 750px;
+      margin: -4px auto 10px;
+      padding: 0 18px;
+      color: #91a7b3;
+      font-size: 12px;
+      min-height: 16px;
+    }
+
+    form {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      gap: 9px;
+      padding: 14px;
+      background: #172631;
+      border-top: 1px solid #304653;
+    }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      padding: 13px 15px;
+      border: 1px solid #405966;
+      border-radius: 24px;
+      outline: none;
+      background: #243743;
+      color: white;
+      font-size: 16px;
+    }
+
+    input::placeholder {
+      color: #9aadb8;
+    }
+
+    button {
+      padding: 0 21px;
+      border: none;
+      border-radius: 24px;
+      background: #477c9b;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+  </style>
 </head>
 
 <body>
-<div id="app">
+  <header>
+    <h1>De installatie</h1>
+    <p>Een kleine kunstfestival-installatie, omringd door blauwe lakens</p>
+  </header>
 
-  <div class="welcome" id="welcome">
-    <div class="logo">the connection<span>.</span></div>
-    <div class="subtitle">Een plek voor gesprekken.</div>
-    <input id="name" placeholder="Vul je naam in..." maxlength="25" autocomplete="off">
-    <button class="joinbtn" id="join">Betreed de chat</button>
-  </div>
+  <main id="chat"></main>
+  <div id="typing"></div>
 
-  <div class="chat" id="chat">
-    <div class="header">
-      <div class="headname">the connection</div>
-      <div class="online"></div>
-    </div>
+  <form id="messageForm">
+    <input
+      id="messageInput"
+      type="text"
+      placeholder="Typ een bericht..."
+      autocomplete="off"
+      required
+    >
+    <button id="sendButton" type="submit">Stuur</button>
+  </form>
 
-    <div class="messages" id="messages">
-      <div class="date">VANDAAG</div>
-    </div>
+  <script>
+    const chat = document.getElementById("chat");
+    const form = document.getElementById("messageForm");
+    const input = document.getElementById("messageInput");
+    const sendButton = document.getElementById("sendButton");
+    const typing = document.getElementById("typing");
 
-    <div class="typing" id="typing"></div>
+    const participants = ["A", "B", "C"];
 
-    <div class="composer">
-      <input id="message" placeholder="Typ een bericht..." maxlength="1000" autocomplete="off">
-      <button class="send" id="send" aria-label="Verstuur">↑</button>
-    </div>
-  </div>
+    let history = [];
+    let busy = false;
+    let idleTimer = null;
+    let autoRemaining = 2;
+    let lastSpeaker = "";
 
-</div>
+    function addMessage(text, isMe = false) {
+      const message = document.createElement("div");
+      message.className = isMe ? "message me" : "message";
 
-<script>
-(()=>{
-  const $=id=>document.getElementById(id);
+      const name = document.createElement("div");
+      name.className = "name";
+      name.textContent = "Persoon";
 
-  const welcome=$('welcome');
-  const chat=$('chat');
-  const nameInput=$('name');
-  const input=$('message');
-  const feed=$('messages');
-  const typing=$('typing');
-  const sendBtn=$('send');
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.textContent = text;
 
-  const characters=['Noah','Mila','Jay'];
+      message.appendChild(name);
+      message.appendChild(bubble);
+      chat.appendChild(message);
 
-  let username='';
-  let history=[];
-  let busy=false;
-  let idleTimer=null;
-  let spontaneousCount=0;
-  let lastSpeaker='';
+      chat.scrollTop = chat.scrollHeight;
 
-  const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+      history.push({ text });
 
-  function addMessage(who,text,mine=false){
-    const el=document.createElement('div');
-    el.className='msg'+(mine?' mine':'');
-
-    const label=document.createElement('div');
-    label.className='sender';
-    label.textContent=mine?username:who;
-
-    const bubble=document.createElement('div');
-    bubble.className='bubble';
-    bubble.textContent=text;
-
-    el.append(label,bubble);
-    feed.appendChild(el);
-    feed.scrollTop=feed.scrollHeight;
-  }
-
-  function cleanReply(text){
-    let cleaned=String(text||'').trim();
-
-    for(const name of characters){
-      const prefix=new RegExp('^'+name+'\\s*:\\s*','i');
-      cleaned=cleaned.replace(prefix,'');
+      if (history.length > 50) {
+        history = history.slice(-50);
+      }
     }
 
-    return cleaned.trim();
-  }
+    async function getReply(character) {
+      typing.textContent = "Een Persoon typt...";
 
-  function addToHistory(role,content){
-    history.push({role,content});
-    history=history.slice(-24);
-  }
+      try {
+        const response = await fetch("/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            character,
+            history
+          })
+        });
 
-  function chooseCharacter(){
-    const options=characters.filter(name=>name!==lastSpeaker);
-    return options[Math.floor(Math.random()*options.length)];
-  }
+        if (!response.ok) {
+          throw new Error("Er ging iets mis met het antwoord.");
+        }
 
-  function cancelIdle(){
-    if(idleTimer){
-      clearTimeout(idleTimer);
-      idleTimer=null;
-    }
-  }
+        const data = await response.json();
+        const reply = (data.reply || "").trim();
 
-  function scheduleIdle(){
-    cancelIdle();
-
-    if(spontaneousCount>=4)return;
-
-    idleTimer=setTimeout(async()=>{
-      if(busy)return;
-
-      const character=chooseCharacter();
-      await getReply(character,true);
-
-      if(spontaneousCount<4){
-        scheduleIdle();
-      }
-    },12000+Math.floor(Math.random()*7000));
-  }
-
-  async function getReply(character,autonomous=false){
-    try{
-      typing.textContent=character+' is aan het typen...';
-
-      const response=await fetch('/chat',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          character,
-          history,
-          autonomous
-        })
-      });
-
-      if(!response.ok){
-        console.error('Bericht niet ontvangen:',character,response.status);
-        return false;
+        if (reply) {
+          addMessage(reply);
+          lastSpeaker = character;
+          return true;
+        }
+      } catch (error) {
+        console.error(error);
       }
 
-      const data=await response.json();
-      const reply=cleanReply(data.reply||'');
-
-      if(!reply)return false;
-
-      addMessage(character,reply);
-
-      addToHistory(
-        'assistant',
-        character+': '+reply
-      );
-
-      lastSpeaker=character;
-
-      if(autonomous){
-        spontaneousCount++;
-      }
-
-      return true;
-
-    }catch(error){
-      console.error('Chatverzoek mislukt:',error);
       return false;
-    }finally{
-      typing.textContent='';
-    }
-  }
-
-  function join(){
-    const n=nameInput.value.trim();
-
-    if(!n){
-      nameInput.focus();
-      return;
     }
 
-    username=n;
-    welcome.style.display='none';
-    chat.style.display='flex';
+    function wait(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
-    const greetings=[
-      ['Mila','Hé, welkom in de chat.'],
-      ['Jay','Een nieuw gezicht. Hoe is je dag?'],
-      ['Noah','Hee '+username+'. Welkom.']
-    ];
+    async function startConversation() {
+      busy = true;
 
-    greetings.forEach(([character,message])=>{
-      addMessage(character,message);
-      addToHistory('assistant',character+': '+message);
-    });
+      await getReply("A");
+      await wait(1200);
 
-    input.focus();
-  }
+      await getReply("B");
+      await wait(1200);
 
-  async function send(){
-    const text=input.value.trim();
+      await getReply("C");
 
-    if(!text||busy)return;
-
-    cancelIdle();
-    spontaneousCount=0;
-
-    addMessage(username,text,true);
-    addToHistory('user',text);
-
-    input.value='';
-    busy=true;
-    sendBtn.disabled=true;
-    sendBtn.classList.add('disabled');
-
-    try{
-      for(const character of characters){
-        if(character==='Mila')await wait(1800);
-        if(character==='Jay')await wait(1800);
-
-        await getReply(character,false);
-      }
-    }finally{
-      busy=false;
-      sendBtn.disabled=false;
-      sendBtn.classList.remove('disabled');
-      typing.textContent='';
-      input.focus();
-
+      busy = false;
+      typing.textContent = "";
       scheduleIdle();
     }
-  }
 
-  $('join').addEventListener('click',join);
+    function scheduleIdle() {
+      clearTimeout(idleTimer);
 
-  nameInput.addEventListener('keydown',e=>{
-    if(e.key==='Enter')join();
-  });
+      if (autoRemaining <= 0) return;
 
-  sendBtn.addEventListener('click',send);
+      idleTimer = setTimeout(async () => {
+        if (busy) {
+          scheduleIdle();
+          return;
+        }
 
-  input.addEventListener('keydown',e=>{
-    if(e.key==='Enter')send();
-  });
+        busy = true;
+        autoRemaining--;
 
-})();
-</script>
+        const possible = participants.filter(p => p !== lastSpeaker);
+        const next = possible[Math.floor(Math.random() * possible.length)];
+
+        await getReply(next);
+
+        busy = false;
+        typing.textContent = "";
+        scheduleIdle();
+      }, 14000 + Math.random() * 9000);
+    }
+
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+
+      const message = input.value.trim();
+
+      if (!message || busy) return;
+
+      clearTimeout(idleTimer);
+
+      addMessage(message, true);
+      input.value = "";
+
+      busy = true;
+      sendButton.disabled = true;
+      autoRemaining = 3;
+
+      const order = participants.filter(p => p !== lastSpeaker);
+
+      for (const character of order) {
+        await wait(1000 + Math.random() * 1000);
+        await getReply(character);
+      }
+
+      busy = false;
+      sendButton.disabled = false;
+      typing.textContent = "";
+      scheduleIdle();
+      input.focus();
+    });
+
+    startConversation();
+  </script>
 </body>
 </html>
