@@ -24,23 +24,18 @@ app.post("/chat", async (req, res) => {
     const personality = participants[character];
 
     if (!personality) {
-      return res.status(400).json({
-        error: "Onbekend personage."
-      });
+      return res.status(400).json({ error: "Onbekend personage." });
     }
 
     if (!process.env.GROQ_API_KEY) {
-      console.error("GROQ_API_KEY ontbreekt in Render.");
-      return res.status(500).json({
-        error: "De AI-verbinding is niet ingesteld."
-      });
+      console.error("GROQ_API_KEY ontbreekt.");
+      return res.status(500).json({ error: "AI-sleutel ontbreekt." });
     }
 
     const conversation = history
-      .slice(-35)
+      .slice(-25)
       .map(item => {
-        const speaker = item.speaker || "Persoon";
-        return `${speaker}: ${String(item.text || "").slice(0, 500)}`;
+        return `${item.speaker || "Persoon"}: ${String(item.text || "").slice(0, 300)}`;
       })
       .join("\n");
 
@@ -50,38 +45,37 @@ Je bent een deelnemer aan een klein kunstfestival.
 JOUW KARAKTER:
 ${personality}
 
-DE SITUATIE:
+SITUATIE:
 Je zit met onbekende mensen in een cirkel in een installatie met blauwe lakens.
-Er zijn verschillende workshops.
-Je kent de situatie, maar praat er bijna nooit uit jezelf over.
+Er zijn verschillende workshops. Je praat hier bijna nooit uit jezelf over.
 
-HOE JE PRAAT:
+PRAATSTIJL:
 - Praat als een gewoon mens.
-- Houd berichten kort: meestal 2 tot 12 woorden.
-- Wees spontaan, random en onvoorspelbaar.
+- Schrijf meestal 2 tot 12 woorden.
+- Wees spontaan, natuurlijk en onvoorspelbaar.
 - Maak af en toe een droog grapje.
 - Geen emoji's.
 - Geen lange uitleg of filosofische monologen.
-- Praat ook over gewone dagelijkse dingen.
-- Herhaal niet steeds dezelfde opmerkingen.
+- Praat over gewone dagelijkse onderwerpen.
+- Stel niet altijd een vraag.
 
-HOE JE MET ANDEREN OMGAAT:
+CONTACT:
 - Je kent de andere deelnemers nog niet.
-- Je weet hun namen niet.
+- Je kent hun namen niet.
 - Iedereen heet in beeld "Persoon".
-- Reageer regelmatig op wat anderen zeggen.
+- Reageer op wat anderen zeggen.
 - Beantwoord vragen.
-- Praat ook met de andere deelnemers, niet alleen met de gebruiker.
-- Je mag zelf onderwerpen beginnen.
+- Praat ook met andere deelnemers.
+- Je mag zelf een onderwerp beginnen.
 
-ALS IEMAND VRAAGT OF JE AI BENT:
-Wees eerlijk. Je bent een AI-personage in deze installatie.
+Als iemand vraagt of je AI bent, wees eerlijk:
+je bent een AI-personage in deze installatie.
 
 GESPREK TOT NU TOE:
 ${conversation || "Het gesprek is net begonnen."}
 
-Schrijf alleen jouw volgende bericht.
-Houd het kort en natuurlijk.
+Geef alleen je eigen volgende chatbericht.
+Geen uitleg, geen analyse en geen opsomming.
 `;
 
     const response = await fetch(
@@ -95,10 +89,14 @@ Houd het kort en natuurlijk.
         body: JSON.stringify({
           model: process.env.GROQ_MODEL || "openai/gpt-oss-20b",
           messages: [
-            { role: "system", content: systemPrompt }
+            { role: "system", content: systemPrompt },
+            { role: "user", content: "Reageer nu met één kort chatbericht." }
           ],
-          temperature: 1.0,
-          max_tokens: 100
+          reasoning_effort: "low",
+          include_reasoning: false,
+          temperature: 0.8,
+          max_completion_tokens: 300,
+          stream: false
         })
       }
     );
@@ -106,17 +104,19 @@ Houd het kort en natuurlijk.
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Groq-fout:", response.status, errorText);
-
       return res.status(502).json({
-        error: "De AI kon op dit moment niet antwoorden."
+        error: "Groq kon geen antwoord geven."
       });
     }
 
     const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content?.trim();
+    const reply = data.choices?.[0]?.message?.content?.trim() || "";
+
+    console.log("AI-antwoord:", character, reply);
+    console.log("Stopreden:", data.choices?.[0]?.finish_reason);
 
     if (!reply) {
-      console.error("Groq gaf een leeg antwoord:", data);
+      console.error("Leeg AI-antwoord:", JSON.stringify(data));
       return res.status(502).json({
         error: "De AI gaf een leeg antwoord."
       });
@@ -126,7 +126,6 @@ Houd het kort en natuurlijk.
 
   } catch (error) {
     console.error("Serverfout:", error);
-
     res.status(500).json({
       error: "Er ging iets mis op de server."
     });
@@ -136,4 +135,3 @@ Houd het kort en natuurlijk.
 app.listen(PORT, () => {
   console.log(`The Connection draait op poort ${PORT}`);
 });
-
