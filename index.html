@@ -1,15 +1,391 @@
+
 <!doctype html>
-<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>The Connection</title>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Connection</title>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-*{box-sizing:border-box}body{margin:0;background:#101113;color:#f4f4f5;font-family:Inter,system-ui,sans-serif}#app{height:100dvh;max-width:760px;margin:0 auto;display:flex;flex-direction:column;background:#111214;border-left:1px solid #25262a;border-right:1px solid #25262a}.welcome{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:24px;background:radial-gradient(ellipse at top,#25242a,#101113 65%)}.logo{font-size:34px;font-weight:700;letter-spacing:-1.5px}.logo span{color:#aa96ff}.subtitle{color:#8a8a91;font-size:12px;margin-top:8px}.welcome input{width:100%;max-width:340px;margin-top:30px;background:#191a1e;border:1px solid #33343a;border-radius:9px;padding:14px;color:white;outline:none}.welcome input:focus{border-color:#aa96ff}.joinbtn{width:100%;max-width:340px;margin-top:10px;background:#aa96ff;border:0;border-radius:9px;padding:14px;color:#19151f;font-weight:600;cursor:pointer}.chat{display:none;flex:1;min-height:0;flex-direction:column}.header{height:62px;flex-shrink:0;display:flex;align-items:center;padding:0 18px;border-bottom:1px solid #292a2e}.headname{font-size:15px;font-weight:600}.online{width:7px;height:7px;border-radius:50%;background:#75c79a;margin-left:9px}.messages{padding:18px;display:flex;flex-direction:column;gap:15px;overflow-y:auto;flex:1}.date{text-align:center;font-size:10px;color:#6f7077;margin-bottom:5px}.msg{display:flex;flex-direction:column;gap:5px;max-width:82%;align-self:flex-start}.msg.mine{align-self:flex-end}.sender{font-size:11px;color:#a2a2a9}.mine .sender{text-align:right}.bubble{font-size:13px;line-height:1.55;background:#222328;padding:10px 13px;border-radius:4px 13px 13px 13px;overflow-wrap:anywhere;white-space:pre-wrap}.mine .bubble{background:#594a7f;border-radius:13px 4px 13px 13px}.composer{display:flex;gap:9px;padding:12px;border-top:1px solid #292a2e;flex-shrink:0}.composer input{flex:1;min-width:0;background:#1b1c20;border:1px solid #303137;border-radius:25px;padding:12px 15px;color:white;outline:none;font-size:13px}.send{width:42px;height:42px;border-radius:50%;border:0;background:#aa96ff;color:#19151f;font-size:20px;font-weight:700;cursor:pointer}.typing{font-size:11px;color:#777;padding:0 16px 8px;min-height:17px}.foot{font-size:10px;color:#686870;text-align:center;padding:0 10px 8px}.system{align-self:center;color:#777;font-size:11px;padding:6px 10px;text-align:center}.error{color:#e4a0a0}.disabled{opacity:.55;cursor:wait}.hidden{display:none!important}
-</style></head><body><div id="app">
-<div class="welcome" id="welcome"><div class="logo">the connection<span>.</span></div><div class="subtitle">Een plek voor gesprekken.</div><input id="name" placeholder="Vul je naam in..." maxlength="25" autocomplete="off"><button class="joinbtn" id="join">Betreed de chat</button></div>
-<div class="chat" id="chat"><div class="header"><div class="headname">the connection</div><div class="online"></div></div><div class="messages" id="messages"><div class="date">VANDAAG</div></div><div class="typing" id="typing"></div><div class="composer"><input id="message" placeholder="Typ een bericht..." maxlength="1000" autocomplete="off"><button class="send" id="send" aria-label="Verstuur">↑</button></div><div class="foot">Noah, Mila en Jay zijn fictieve AI-personages</div></div></div>
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:#101113;
+  color:#f4f4f5;
+  font-family:Inter,system-ui,sans-serif
+}
+
+#app{
+  height:100dvh;
+  max-width:760px;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  background:#111214;
+  border-left:1px solid #25262a;
+  border-right:1px solid #25262a
+}
+
+.welcome{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  padding:24px;
+  background:radial-gradient(ellipse at top,#25242a,#101113 65%)
+}
+
+.logo{
+  font-size:34px;
+  font-weight:700;
+  letter-spacing:-1.5px
+}
+
+.logo span{color:#aa96ff}
+
+.subtitle{
+  color:#8a8a91;
+  font-size:12px;
+  margin-top:8px
+}
+
+.welcome input{
+  width:100%;
+  max-width:340px;
+  margin-top:30px;
+  background:#191a1e;
+  border:1px solid #33343a;
+  border-radius:9px;
+  padding:14px;
+  color:white;
+  outline:none
+}
+
+.welcome input:focus{border-color:#aa96ff}
+
+.joinbtn{
+  width:100%;
+  max-width:340px;
+  margin-top:10px;
+  background:#aa96ff;
+  border:0;
+  border-radius:9px;
+  padding:14px;
+  color:#19151f;
+  font-weight:600;
+  cursor:pointer
+}
+
+.chat{
+  display:none;
+  flex:1;
+  min-height:0;
+  flex-direction:column
+}
+
+.header{
+  height:62px;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  padding:0 18px;
+  border-bottom:1px solid #292a2e
+}
+
+.headname{
+  font-size:15px;
+  font-weight:600
+}
+
+.online{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#75c79a;
+  margin-left:9px
+}
+
+.messages{
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+  overflow-y:auto;
+  flex:1
+}
+
+.date{
+  text-align:center;
+  font-size:10px;
+  color:#6f7077;
+  margin-bottom:5px
+}
+
+.msg{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  max-width:82%;
+  align-self:flex-start
+}
+
+.msg.mine{align-self:flex-end}
+
+.sender{
+  font-size:11px;
+  color:#a2a2a9
+}
+
+.mine .sender{text-align:right}
+
+.bubble{
+  font-size:13px;
+  line-height:1.55;
+  background:#222328;
+  padding:10px 13px;
+  border-radius:4px 13px 13px 13px;
+  overflow-wrap:anywhere;
+  white-space:pre-wrap
+}
+
+.mine .bubble{
+  background:#594a7f;
+  border-radius:13px 4px 13px 13px
+}
+
+.composer{
+  display:flex;
+  gap:9px;
+  padding:12px;
+  border-top:1px solid #292a2e;
+  flex-shrink:0
+}
+
+.composer input{
+  flex:1;
+  min-width:0;
+  background:#1b1c20;
+  border:1px solid #303137;
+  border-radius:25px;
+  padding:12px 15px;
+  color:white;
+  outline:none;
+  font-size:13px
+}
+
+.send{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:0;
+  background:#aa96ff;
+  color:#19151f;
+  font-size:20px;
+  font-weight:700;
+  cursor:pointer
+}
+
+.typing{
+  font-size:11px;
+  color:#777;
+  padding:0 16px 8px;
+  min-height:17px
+}
+
+.foot{
+  font-size:10px;
+  color:#686870;
+  text-align:center;
+  padding:0 10px 8px
+}
+
+.system{
+  align-self:center;
+  color:#777;
+  font-size:11px;
+  padding:6px 10px;
+  text-align:center
+}
+
+.error{color:#e4a0a0}
+
+.disabled{
+  opacity:.55;
+  cursor:wait
+}
+
+.hidden{display:none!important}
+</style>
+</head>
+
+<body>
+<div id="app">
+
+  <div class="welcome" id="welcome">
+    <div class="logo">the connection<span>.</span></div>
+    <div class="subtitle">Een plek voor gesprekken.</div>
+    <input id="name" placeholder="Vul je naam in..." maxlength="25" autocomplete="off">
+    <button class="joinbtn" id="join">Betreed de chat</button>
+  </div>
+
+  <div class="chat" id="chat">
+    <div class="header">
+      <div class="headname">the connection</div>
+      <div class="online"></div>
+    </div>
+
+    <div class="messages" id="messages">
+      <div class="date">VANDAAG</div>
+    </div>
+
+    <div class="typing" id="typing"></div>
+
+    <div class="composer">
+      <input id="message" placeholder="Typ een bericht..." maxlength="1000" autocomplete="off">
+      <button class="send" id="send" aria-label="Verstuur">↑</button>
+    </div>
+
+    <div class="foot">Noah, Mila en Jay zijn fictieve AI-personages</div>
+  </div>
+
+</div>
+
 <script>
-(()=>{const $=id=>document.getElementById(id);const welcome=$('welcome'),chat=$('chat'),nameInput=$('name'),input=$('message'),feed=$('messages'),typing=$('typing'),sendBtn=$('send');let username='';let history=[];const colors={Noah:'#b5a08d',Mila:'#b2a3d8',Jay:'#8cb8a7'};
-function addMessage(who,text,mine=false){const el=document.createElement('div');el.className='msg'+(mine?' mine':'');const label=document.createElement('div');label.className='sender';label.textContent=mine?username:who;const bubble=document.createElement('div');bubble.className='bubble';bubble.textContent=text;el.append(label,bubble);feed.appendChild(el);feed.scrollTop=feed.scrollHeight}
-function join(){const n=nameInput.value.trim();if(!n){nameInput.focus();return}username=n;welcome.style.display='none';chat.style.display='flex';addMessage('Mila','Hé, welkom in de chat! 😊');addMessage('Jay','Een nieuw gezicht, gezellig. Hoe is je dag?');addMessage('Noah','Hee '+username+'. Welkom!');input.focus()}
-async function send(){const text=input.value.trim();if(!text||sendBtn.disabled)return;addMessage(username,text,true);input.value='';sendBtn.disabled=true;sendBtn.classList.add('disabled');typing.textContent='Noah, Mila en Jay typen...';history.push({role:'user',content:text});try{const response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:username,message:text,history:history.slice(-18)})});const data=await response.json();if(!response.ok)throw new Error(data.error||'Er is een fout opgetreden.');for(const reply of data.replies||[]){addMessage(reply.name,reply.text);history.push({role:'assistant',content:`${reply.name}: ${reply.text}`});}history=history.slice(-24)}catch(err){const e=document.createElement('div');e.className='system error';e.textContent=err.message;feed.appendChild(e);feed.scrollTop=feed.scrollHeight;history.pop()}finally{typing.textContent='';sendBtn.disabled=false;sendBtn.classList.remove('disabled');input.focus()}}
-$('join').addEventListener('click',join);nameInput.addEventListener('keydown',e=>{if(e.key==='Enter')join()});sendBtn.addEventListener('click',send);input.addEventListener('keydown',e=>{if(e.key==='Enter')send()});})();
-</script></body></html>
+(()=>{
+  const $=id=>document.getElementById(id);
+
+  const welcome=$('welcome');
+  const chat=$('chat');
+  const nameInput=$('name');
+  const input=$('message');
+  const feed=$('messages');
+  const typing=$('typing');
+  const sendBtn=$('send');
+
+  let username='';
+  let history=[];
+
+  const colors={
+    Noah:'#b5a08d',
+    Mila:'#b2a3d8',
+    Jay:'#8cb8a7'
+  };
+
+  function addMessage(who,text,mine=false){
+    const el=document.createElement('div');
+    el.className='msg'+(mine?' mine':'');
+
+    const label=document.createElement('div');
+    label.className='sender';
+    label.textContent=mine?username:who;
+
+    const bubble=document.createElement('div');
+    bubble.className='bubble';
+    bubble.textContent=text;
+
+    el.append(label,bubble);
+    feed.appendChild(el);
+    feed.scrollTop=feed.scrollHeight;
+  }
+
+  function join(){
+    const n=nameInput.value.trim();
+
+    if(!n){
+      nameInput.focus();
+      return;
+    }
+
+    username=n;
+    welcome.style.display='none';
+    chat.style.display='flex';
+
+    addMessage('Mila','Hé, welkom in de chat! 😊');
+    addMessage('Jay','Een nieuw gezicht, gezellig. Hoe is je dag?');
+    addMessage('Noah','Hee '+username+'. Welkom!');
+
+    input.focus();
+  }
+
+  async function send(){
+    const text=input.value.trim();
+
+    if(!text||sendBtn.disabled)return;
+
+    addMessage(username,text,true);
+    input.value='';
+    sendBtn.disabled=true;
+    sendBtn.classList.add('disabled');
+    typing.textContent='Noah, Mila en Jay typen...';
+
+    history.push({role:'user',content:text});
+
+    try{
+      for(const character of ['Noah','Mila','Jay']){
+
+        const response=await fetch('/chat',{
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json'
+          },
+          body:JSON.stringify({
+            character:character,
+            message:text
+          })
+        });
+
+        const data=await response.json();
+
+        if(!response.ok){
+          throw new Error(data.error||'Er is een fout opgetreden.');
+        }
+
+        if(!data.reply){
+          throw new Error('Geen antwoord ontvangen van '+character+'.');
+        }
+
+        addMessage(character,data.reply);
+
+        history.push({
+          role:'assistant',
+          content:character+': '+data.reply
+        });
+      }
+
+      history=history.slice(-24);
+
+    }catch(err){
+      const e=document.createElement('div');
+      e.className='system error';
+      e.textContent=err.message;
+      feed.appendChild(e);
+      feed.scrollTop=feed.scrollHeight;
+
+    }finally{
+      typing.textContent='';
+      sendBtn.disabled=false;
+      sendBtn.classList.remove('disabled');
+      input.focus();
+    }
+  }
+
+  $('join').addEventListener('click',join);
+
+  nameInput.addEventListener('keydown',e=>{
+    if(e.key==='Enter')join();
+  });
+
+  sendBtn.addEventListener('click',send);
+
+  input.addEventListener('keydown',e=>{
+    if(e.key==='Enter')send();
+  });
+
+})();
+</script>
+</body>
+</html>
