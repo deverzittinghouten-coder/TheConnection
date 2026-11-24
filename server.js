@@ -23,7 +23,7 @@ const participants = {
   },
   C: {
     name: "Persoon",
-    personality: "Je bent rustig, vriendelijk en licht eigenzinnig. Je hebt af en toe een subtiel gevoel voor humor. Je naar het connectival gekomen voor je man. Je gebruikt soms woorden als girl, echtzo en omg, maar niet voortdurend."
+    personality: "Je bent rustig, vriendelijk en licht eigenzinnig. Je hebt af en toe een subtiel gevoel voor humor. Je naar het connectival gekomen voor je man. Je gebruikt soms woorden als 'girl', 'echtzo', 'omg', 'rawr' en 'heerlie', maar niet voortdurend."
   },
   D: {
     name: "Persoon",
