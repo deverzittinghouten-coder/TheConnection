@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#101c1a">
+  <meta name="theme-color" content="#0b1518">
   <title>THE CONNECTION</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,24 +19,32 @@
     body {
       margin: 0;
       min-height: 100vh;
-      background: #101c1a;
-      color: #e5ece8;
+      background:
+        radial-gradient(ellipse at 15% 0%, rgba(35, 79, 73, 0.24), transparent 42%),
+        radial-gradient(ellipse at 90% 80%, rgba(28, 54, 83, 0.25), transparent 45%),
+        #0b1518;
+      color: #e8efeb;
       font-family: "DM Sans", sans-serif;
     }
 
     .app {
-      max-width: 850px;
+      position: relative;
+      max-width: 900px;
       height: 100dvh;
       margin: auto;
       display: flex;
       flex-direction: column;
-      padding: 0 24px;
-      background: #142321;
+      padding: 0 30px;
+      background:
+        linear-gradient(155deg, rgba(26, 48, 45, 0.96), rgba(16, 31, 36, 0.98) 55%, rgba(15, 29, 43, 0.98));
+      border-left: 1px solid rgba(180, 210, 195, 0.05);
+      border-right: 1px solid rgba(180, 210, 195, 0.05);
+      box-shadow: 0 0 100px rgba(0, 0, 0, 0.25);
     }
 
     header {
-      padding: 27px 0 23px;
-      border-bottom: 1px solid rgba(190, 213, 201, 0.09);
+      padding: 30px 0 24px;
+      border-bottom: 1px solid rgba(190, 216, 202, 0.09);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -45,74 +53,64 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 14px;
-    }
-
-    .brand-mark {
-      width: 36px;
-      height: 36px;
-      border-radius: 11px;
-      display: grid;
-      place-items: center;
-      background: #24433a;
-      color: #b4d5c1;
-      font-size: 19px;
     }
 
     h1 {
       margin: 0;
       font-family: "Manrope", sans-serif;
-      font-size: 17px;
+      font-size: 19px;
       font-weight: 600;
-      letter-spacing: 2.4px;
+      letter-spacing: 3.2px;
+      color: #edf4ef;
     }
 
     .subtitle {
-      margin-top: 5px;
-      color: #82958d;
+      margin-top: 6px;
+      color: #91a99d;
       font-size: 10px;
-      letter-spacing: 1.6px;
+      letter-spacing: 2px;
     }
 
     .status {
       display: flex;
       align-items: center;
-      gap: 8px;
-      color: #91a69a;
+      gap: 9px;
+      color: #a1b8aa;
       font-size: 10px;
-      letter-spacing: 1.2px;
+      letter-spacing: 1.5px;
     }
 
     .status-dot {
-      width: 6px;
-      height: 6px;
-      background: #82b69a;
+      width: 7px;
+      height: 7px;
+      background: #83c19a;
       border-radius: 50%;
+      box-shadow: 0 0 12px rgba(131, 193, 154, 0.65);
     }
 
     #chat {
       flex: 1;
       overflow-y: auto;
-      padding: 32px 3px;
+      padding: 38px 5px;
       scrollbar-width: thin;
-      scrollbar-color: #355047 transparent;
+      scrollbar-color: #3b5a50 transparent;
     }
 
     .date-label {
       text-align: center;
-      color: #71867c;
+      color: #829b90;
       font-size: 10px;
-      letter-spacing: 2px;
-      margin: 5px 0 35px;
+      letter-spacing: 2.5px;
+      margin: 5px 0 42px;
     }
 
     .message {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      margin-bottom: 23px;
-      max-width: 78%;
-      animation: appear 0.3s ease;
+      margin-bottom: 27px;
+      max-width: 76%;
+      animation: appear 0.35s ease;
     }
 
     .message.me {
@@ -121,42 +119,48 @@
     }
 
     .name {
-      color: #9cbea9;
+      color: #a4c6ad;
       font-size: 10px;
       font-weight: 600;
-      margin: 0 0 7px 5px;
-      letter-spacing: 0.5px;
+      margin: 0 0 8px 7px;
+      letter-spacing: 0.8px;
     }
 
     .message.me .name {
-      color: #9aafa3;
-      margin-right: 5px;
+      color: #a4b8b2;
+      margin-right: 7px;
     }
 
     .bubble {
-      padding: 13px 17px;
-      background: #20332f;
-      border: 1px solid rgba(180, 210, 190, 0.06);
-      border-radius: 4px 16px 16px 16px;
-      color: #e0e9e3;
-      line-height: 1.65;
+      padding: 14px 19px;
+      background: linear-gradient(145deg, #263d38, #1d332f);
+      border: 1px solid rgba(190, 220, 199, 0.09);
+      border-radius: 4px 18px 18px 18px;
+      color: #e2ece5;
+      line-height: 1.7;
       font-size: 14px;
       overflow-wrap: anywhere;
+      box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.13),
+        inset 0 1px 0 rgba(255, 255, 255, 0.025);
     }
 
     .message.me .bubble {
-      background: #294b40;
-      border-color: rgba(170, 210, 180, 0.08);
-      border-radius: 16px 4px 16px 16px;
-      color: #eff6f0;
+      background: linear-gradient(145deg, #345b50, #294b46);
+      border-color: rgba(175, 218, 190, 0.13);
+      border-radius: 18px 4px 18px 18px;
+      color: #f0f6f1;
+      box-shadow:
+        0 9px 26px rgba(0, 0, 0, 0.19),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
     }
 
     #typing {
-      min-height: 27px;
-      color: #91a99a;
+      min-height: 29px;
+      color: #9bb5a5;
       font-size: 11px;
-      letter-spacing: 0.3px;
-      padding: 0 5px;
+      letter-spacing: 0.4px;
+      padding: 0 7px;
     }
 
     .typing-dots {
@@ -168,7 +172,7 @@
     .typing-dots span {
       width: 4px;
       height: 4px;
-      background: #9ac4a8;
+      background: #a3d1ae;
       border-radius: 50%;
       animation: pulse 1s infinite alternate;
     }
@@ -182,23 +186,29 @@
     }
 
     .composer {
-      padding: 17px 0 23px;
-      border-top: 1px solid rgba(190, 213, 201, 0.09);
+      padding: 19px 0 25px;
+      border-top: 1px solid rgba(190, 216, 202, 0.09);
     }
 
     form {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 6px 7px 6px 18px;
-      background: #1b2c28;
-      border: 1px solid #344a41;
-      border-radius: 15px;
-      transition: border 0.2s;
+      gap: 13px;
+      padding: 7px 8px 7px 20px;
+      background: linear-gradient(145deg, #1c302e, #182b2d);
+      border: 1px solid rgba(151, 190, 166, 0.19);
+      border-radius: 17px;
+      box-shadow:
+        0 12px 35px rgba(0, 0, 0, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.025);
+      transition: border 0.25s, box-shadow 0.25s;
     }
 
     form:focus-within {
-      border-color: #729b80;
+      border-color: rgba(139, 190, 153, 0.65);
+      box-shadow:
+        0 0 0 3px rgba(110, 161, 127, 0.08),
+        0 12px 35px rgba(0, 0, 0, 0.22);
     }
 
     input {
@@ -210,28 +220,29 @@
       color: #edf4ee;
       font: inherit;
       font-size: 14px;
-      padding: 11px 0;
+      padding: 12px 0;
     }
 
     input::placeholder {
-      color: #7e9186;
+      color: #81968c;
     }
 
     button {
-      width: 42px;
-      height: 42px;
-      border: none;
-      border-radius: 11px;
-      background: #416b56;
-      color: #f0f6f0;
-      font-size: 19px;
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(190, 226, 198, 0.12);
+      border-radius: 13px;
+      background: linear-gradient(145deg, #5a8b6c, #38654f);
+      color: #f3f8f2;
+      font-size: 20px;
       cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
       transition: background 0.2s, transform 0.2s;
     }
 
     button:hover {
-      background: #527d65;
-      transform: translateY(-1px);
+      background: linear-gradient(145deg, #6b9c7c, #47775d);
+      transform: translateY(-2px);
     }
 
     button:disabled {
@@ -242,16 +253,16 @@
 
     .footer-note {
       text-align: center;
-      margin-top: 13px;
-      color: #687e73;
+      margin-top: 15px;
+      color: #748b80;
       font-size: 9px;
-      letter-spacing: 1.1px;
+      letter-spacing: 1.5px;
     }
 
     @keyframes appear {
       from {
         opacity: 0;
-        transform: translateY(6px);
+        transform: translateY(8px);
       }
       to {
         opacity: 1;
@@ -272,15 +283,16 @@
 
     @media (max-width: 600px) {
       .app {
-        padding: 0 16px;
+        padding: 0 17px;
       }
 
       header {
-        padding: 21px 0 18px;
+        padding: 23px 0 19px;
       }
 
       h1 {
-        font-size: 15px;
+        font-size: 16px;
+        letter-spacing: 2.5px;
       }
 
       .message {
@@ -288,11 +300,12 @@
       }
 
       #chat {
-        padding-top: 25px;
+        padding-top: 29px;
       }
 
       .status {
         font-size: 9px;
+        letter-spacing: 1px;
       }
     }
   </style>
@@ -302,7 +315,6 @@
   <div class="app">
     <header>
       <div class="brand">
-        <div class="brand-mark">✳</div>
         <div>
           <h1>THE CONNECTION</h1>
           <div class="subtitle">A SPACE TO CONNECT</div>
