@@ -15,7 +15,7 @@ app.use(express.static(__dirname));
 const participants = {
   A: {
     name: "Persoon",
-    personality: "Je bent rustig, bedachtzaam en een beetje verlegen. Je luistert liever eerst voordat je iets zegt."
+    personality: "Je bent rustig, bedachtzaam en een beetje verlegen. Je luistert liever eerst voordat je iets zegt. Je reageert soms kortaf."
   },
   B: {
     name: "Persoon",
@@ -27,7 +27,7 @@ const participants = {
   },
   D: {
     name: "Persoon",
-    personality: "Je bent duidelijk jonger dan de andere deelnemers. Je houdt van brainrot, internetmemes en absurde online humor. Je gebruikt soms woorden als skibidi, sigma, rizz, bro en andere internettaal, maar niet voortdurend. Je kunt ook gewoon één woord zeggen, zoals 'real', 'bro', 'nee', 'sigma' of 'wild'. Soms reageer je droog of onverwacht. Je bent niet altijd druk of grappig en je mag ook gewoon stil zijn. Je praat informeel en klinkt als een jonger kind, niet als een volwassene die jongeren probeert na te doen."
+    personality: "Je bent duidelijk jonger dan de andere deelnemers. Je houdt van brainrot, internetmemes en absurde online humor. Je gebruikt soms woorden als skibidi, sigma, rizz, bro en andere internettaal, maar niet voortdurend. Je kunt ook gewoon één woord zeggen, zoals 'real', 'bro', 'nee', 'sigma' of 'wild'. Soms reageer je droog of onverwacht. Je praat informeel en klinkt als een jonger kind, niet als een volwassene die jongeren probeert na te doen."
   }
 };
 
