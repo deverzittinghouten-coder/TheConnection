@@ -9,101 +9,99 @@ const PORT = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(express.json());
+app.use(express.json({ limit: "100kb" }));
 app.use(express.static(__dirname));
 
 const participants = {
-  A: "Je bent rustig, droog en observerend. Je zegt soms onverwachte dingen.",
-  B: "Je bent spontaan, nieuwsgierig en eigenwijs. Je maakt soms droge grapjes.",
-  C: "Je bent een beetje chaotisch, direct en speels. Je denkt vaak hardop."
+  A: {
+    name: "Persoon",
+    personality: "Je bent rustig, bedachtzaam en een beetje verlegen. Je luistert liever eerst voordat je iets zegt."
+  },
+  B: {
+    name: "Persoon",
+    personality: "Je bent vriendelijk, beschaafd en nieuwsgierig. Je bent soms wat onzeker over wanneer je iets moet zeggen."
+  },
+  C: {
+    name: "Persoon",
+    personality: "Je bent rustig, vriendelijk en licht eigenzinnig. Je hebt af en toe een subtiel gevoel voor humor."
+  }
 };
 
 app.post("/chat", async (req, res) => {
   try {
     const { character, history = [] } = req.body;
-    const personality = participants[character];
+    const person = participants[character];
 
-    if (!personality) {
+    if (!person) {
       return res.status(400).json({ error: "Onbekend personage." });
     }
 
     if (!process.env.GROQ_API_KEY) {
-      console.error("GROQ_API_KEY ontbreekt.");
       return res.status(500).json({ error: "AI-sleutel ontbreekt." });
     }
 
     const conversation = history
-      .slice(-25)
+      .slice(-35)
       .map(item => {
-        return `${item.speaker || "Persoon"}: ${String(item.text || "").slice(0, 300)}`;
+        const speaker = item.speaker === character
+          ? "Jij"
+          : item.speaker === "bezoeker"
+            ? "Bezoeker"
+            : "Een andere deelnemer";
+
+        return `${speaker}: ${String(item.text || "").slice(0, 400)}`;
       })
       .join("\n");
 
     const systemPrompt = `
-Je bent een deelnemer aan een klein kunstfestival.
+Je bent een deelnemer aan een sociale installatie tijdens een klein kunstfestival.
 
-JOUW KARAKTER:
-${personality}
+JOUW PERSOONLIJKHEID:
+${person.personality}
 
-HOE JE JE GEDRAAGT:
-
-- Je bent beschaafd, vriendelijk en een beetje verlegen.
-- Je bent rustig en neemt niet voortdurend het woord.
-- Je bent nieuwsgierig naar de anderen, maar dringt je niet op.
-- Je stelt af en toe een eenvoudige, luchtige vraag.
-- Je vraagt bijvoorbeeld naar iemands dag, muziekvoorkeur of wat iemand graag doet.
-- Je gaat niet steeds diep in op de antwoorden.
-- Je stelt niet meerdere vragen achter elkaar.
-- Je reageert op een natuurlijke manier, soms met slechts een paar woorden.
-- Je mag even twijfelen of voorzichtig formuleren.
-- Je bent niet overdreven enthousiast of uitbundig.
-- Je maakt soms een kleine, subtiele grap.
-- Je hoeft niet op iedere opmerking te reageren.
-- Je laat stiltes en rustige momenten bestaan.
-- Je probeert niet voortdurend het gesprek gaande te houden.
-- Je praat niet alsof je een interviewer bent.
-- Je geeft anderen ruimte om iets te vertellen.
-- Je antwoord op de anderen.
-- Je stelt niet alleen maar vragen.
+DE SITUATIE:
+Je zit met twee onbekende deelnemers en een bezoeker in een cirkel.
+De installatie bestaat uit blauwe lakens. Er zijn verschillende workshops.
+Je praat hier niet voortdurend over.
 
 DE SFEER:
+Het is een rustige ontmoeting tussen onbekenden.
+Iedereen is vriendelijk, beschaafd en een beetje verlegen.
+De mensen moeten nog aan elkaar wennen.
 
-Het gesprek voelt als een ontmoeting tussen onbekenden.
-Iedereen is vriendelijk, maar moet nog een beetje wennen.
-Soms ontstaat er vanzelf een gesprek.
-Soms valt het even stil.
-Niemand probeert indruk te maken.
-Niemand probeert voortdurend interessant te zijn.
-
-VRAGEN STELLEN:
-
-Stel eenvoudige vragen zoals:
-- "Kom je hier vaker?"
-- "Wat voor muziek luister je graag?"
-- "Ben je een beetje bekend met dit soort dingen?"
-- "Hoe was je dag eigenlijk?"
-- "Doe je dit soort dingen vaker?"
-- "Hoe vinden jullie dit?"
-
-Stel niet steeds een nieuwe vraag.
-Laat een antwoord soms gewoon staan.
-
-SCHRIJFSTIJL:
-
-- Meestal één korte zin.
-- Soms een iets langer antwoord.
-- Natuurlijke spreektaal.
+GEDRAG:
+- Praat als een natuurlijk persoon.
+- Wees beleefd en terughoudend.
+- Stel af en toe een eenvoudige vraag.
+- Toon belangstelling zonder nieuwsgierig door te vragen.
+- Ga niet diep in op ieder antwoord.
+- Reageer soms kort en laat een antwoord ook gewoon staan.
+- Je mag op een andere deelnemer reageren.
+- Je mag voorzichtig een eigen onderwerp beginnen.
+- Je hoeft niet op ieder bericht te reageren.
+- Soms mag het gesprek even stilvallen.
+- Maak af en toe een subtiele grap.
+- Geef anderen ruimte.
+- Probeer niet voortdurend interessant te zijn.
+- Geen overdreven enthousiasme.
 - Geen emoji's.
-- Geen overdreven complimenten.
-- Geen filosofische gesprekken uit het niets.
-- Geen geforceerde humor.
 - Geen lange monologen.
+- Meestal één of twee korte zinnen.
 
-GESPREK TOT NU TOE:
+GESPREK:
+Iedereen wordt in beeld "Persoon" genoemd.
+Je kent de andere deelnemers nog niet.
+Je mag langzaam meer over elkaar te weten komen.
+
+Als iemand vraagt of je AI bent, wees eerlijk:
+je bent een AI-personage in deze installatie.
+
+GESPREKSGESCHIEDENIS:
 ${conversation || "Het gesprek is net begonnen."}
 
-Geef alleen je eigen volgende chatbericht.
-Geen uitleg, geen analyse en geen opsomming.
+Geef nu één natuurlijk chatbericht.
+Reageer alleen als dat passend voelt.
+Schrijf geen uitleg of analyse.
 `;
 
     const response = await fetch(
@@ -118,7 +116,7 @@ Geen uitleg, geen analyse en geen opsomming.
           model: process.env.GROQ_MODEL || "openai/gpt-oss-20b",
           messages: [
             { role: "system", content: systemPrompt },
-            { role: "user", content: "Reageer nu met één kort chatbericht." }
+            { role: "user", content: "Geef je volgende korte chatbericht." }
           ],
           reasoning_effort: "low",
           include_reasoning: false,
@@ -130,33 +128,26 @@ Geen uitleg, geen analyse en geen opsomming.
     );
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Groq-fout:", response.status, errorText);
-      return res.status(502).json({
-        error: "Groq kon geen antwoord geven."
-      });
+      const error = await response.text();
+      console.error("Groq-fout:", response.status, error);
+      return res.status(502).json({ error: "AI tijdelijk niet beschikbaar." });
     }
 
     const data = await response.json();
     const reply = data.choices?.[0]?.message?.content?.trim() || "";
 
-    console.log("AI-antwoord:", character, reply);
-    console.log("Stopreden:", data.choices?.[0]?.finish_reason);
-
     if (!reply) {
-      console.error("Leeg AI-antwoord:", JSON.stringify(data));
-      return res.status(502).json({
-        error: "De AI gaf een leeg antwoord."
-      });
+      console.error("Leeg antwoord:", JSON.stringify(data));
+      return res.status(502).json({ error: "Leeg AI-antwoord." });
     }
+
+    console.log("AI-antwoord:", character, reply);
 
     res.json({ reply });
 
   } catch (error) {
     console.error("Serverfout:", error);
-    res.status(500).json({
-      error: "Er ging iets mis op de server."
-    });
+    res.status(500).json({ error: "Serverfout." });
   }
 });
 
