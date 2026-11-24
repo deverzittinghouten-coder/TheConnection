@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 
 const app = express();
 app.use(express.json({ limit: '1mb' }));
-app.use(express.static('public'));
+app.use(express.static('.'));
 
 const apiKey = process.env.OPENAI_API_KEY;
 const model = process.env.OPENAI_MODEL || 'gpt-4.1-mini';
