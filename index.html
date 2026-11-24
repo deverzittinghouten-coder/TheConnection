@@ -356,16 +356,17 @@
 
     function chooseParticipant() {
       const possible = participants.filter(person => person !== lastSpeaker);
-      const choices = possible.length ? possible : participants;
+
+      if (possible.length === 0) return "D";
+
+      // D krijgt iets vaker de beurt.
+      const choices = [...possible, "D", "D"];
 
       return choices[Math.floor(Math.random() * choices.length)];
     }
 
     async function pauseBeforeReply() {
-      // Eerst is het even stil.
       await wait(1500 + Math.random() * 2500);
-
-      // Daarna lijkt iemand na te denken en te typen.
       showTyping();
       await wait(3000 + Math.random() * 3000);
     }
@@ -418,7 +419,6 @@
         return;
       }
 
-      // Tijdens de stilte verschijnt de typ-indicator pas later.
       const typingDelay = Math.max(
         1000,
         delay - (4000 + Math.random() * 4000)
@@ -448,9 +448,8 @@
 
         conversationTurns--;
 
-        // Soms neemt een andere deelnemer daarna nog het woord.
         if (conversationTurns > 0 && Math.random() < 0.7) {
-          scheduleNextConversation(18000 + Math.random() * 17000);
+          scheduleNextConversation(12000 + Math.random() * 10000);
         } else {
           conversationTurns = 0;
           typing.textContent = "";
@@ -471,7 +470,7 @@
 
       if (success) {
         conversationTurns = 2;
-        scheduleNextConversation(18000 + Math.random() * 17000);
+        scheduleNextConversation(12000 + Math.random() * 10000);
       } else {
         typing.textContent = "";
       }
@@ -493,7 +492,6 @@
 
       setBusy(true);
 
-      // Ook na een bericht van de bezoeker nemen ze even de tijd.
       await pauseBeforeReply();
 
       const firstPerson = chooseParticipant();
@@ -503,7 +501,7 @@
 
       if (firstSuccess) {
         conversationTurns = 2;
-        scheduleNextConversation(18000 + Math.random() * 17000);
+        scheduleNextConversation(12000 + Math.random() * 10000);
       } else {
         typing.textContent = "";
       }
