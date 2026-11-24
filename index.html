@@ -4,148 +4,325 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>De installatie</title>
+  <meta name="theme-color" content="#080e19">
+  <title>THE CONNECTION</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
-      background: #101820;
-      color: #eeeeee;
-      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at 50% -15%, rgba(47, 103, 160, 0.23), transparent 55%),
+        #080e19;
+      color: #edf4ff;
+      font-family: "DM Sans", sans-serif;
+    }
+
+    .app {
+      max-width: 900px;
+      height: 100dvh;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      padding: 0 20px;
     }
 
     header {
-      padding: 22px 18px;
-      text-align: center;
-      background: #172631;
-      border-bottom: 1px solid #304653;
+      padding: 25px 0 20px;
+      border-bottom: 1px solid rgba(143, 177, 214, 0.13);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
-    header h1 {
-      margin: 0 0 7px;
-      font-size: 20px;
-      font-weight: 500;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
     }
 
-    header p {
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      border: 1px solid rgba(119, 177, 232, 0.5);
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(145deg, #244b70, #12243a);
+      color: #c8e5ff;
+      font-size: 19px;
+      box-shadow: 0 0 25px rgba(55, 133, 204, 0.15);
+    }
+
+    h1 {
       margin: 0;
-      color: #a9bdc8;
-      font-size: 13px;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 19px;
+      font-weight: 600;
+      letter-spacing: 3px;
+    }
+
+    .subtitle {
+      margin-top: 4px;
+      color: #71869f;
+      font-size: 11px;
+      letter-spacing: 1.4px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #8ba4ba;
+      font-size: 11px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      background: #64c7a2;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(100, 199, 162, 0.6);
     }
 
     #chat {
-      max-width: 750px;
-      height: calc(100vh - 150px);
-      margin: 0 auto;
-      padding: 22px 16px;
+      flex: 1;
       overflow-y: auto;
+      padding: 28px 4px;
+      scrollbar-width: thin;
+      scrollbar-color: #263d55 transparent;
+    }
+
+    .date-label {
+      text-align: center;
+      color: #647991;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 5px 0 30px;
     }
 
     .message {
-      margin-bottom: 15px;
-      max-width: 85%;
-    }
-
-    .message .name {
-      margin-bottom: 5px;
-      color: #91b9d0;
-      font-size: 12px;
-    }
-
-    .message .bubble {
-      padding: 10px 14px;
-      border-radius: 14px;
-      background: #243743;
-      line-height: 1.4;
-      overflow-wrap: anywhere;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      max-width: 82%;
+      animation: appear 0.25s ease;
     }
 
     .message.me {
+      align-items: flex-end;
       margin-left: auto;
     }
 
+    .name {
+      color: #83a8ce;
+      font-size: 11px;
+      font-weight: 600;
+      margin: 0 0 7px 5px;
+      letter-spacing: 0.5px;
+    }
+
     .message.me .name {
-      text-align: right;
-      color: #b5c6d0;
+      color: #8eabc7;
+      margin-right: 5px;
+    }
+
+    .bubble {
+      padding: 12px 16px;
+      background: #17283b;
+      border: 1px solid rgba(125, 166, 208, 0.13);
+      border-radius: 5px 17px 17px 17px;
+      color: #e0eaf5;
+      line-height: 1.55;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
     }
 
     .message.me .bubble {
-      background: #31536a;
+      background: linear-gradient(135deg, #244c73, #1b3b5b);
+      border-color: rgba(125, 180, 233, 0.2);
+      border-radius: 17px 5px 17px 17px;
+      color: #f1f7ff;
     }
 
     #typing {
-      max-width: 750px;
-      margin: -4px auto 10px;
-      padding: 0 18px;
-      color: #91a7b3;
-      font-size: 12px;
-      min-height: 16px;
+      min-height: 25px;
+      color: #7894ae;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      padding: 0 5px;
+    }
+
+    .typing-dots {
+      display: inline-flex;
+      gap: 4px;
+      margin-left: 7px;
+    }
+
+    .typing-dots span {
+      width: 4px;
+      height: 4px;
+      background: #82b4df;
+      border-radius: 50%;
+      animation: pulse 1s infinite alternate;
+    }
+
+    .typing-dots span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dots span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    .composer {
+      padding: 14px 0 22px;
+      border-top: 1px solid rgba(143, 177, 214, 0.13);
     }
 
     form {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
       display: flex;
-      gap: 9px;
-      padding: 14px;
-      background: #172631;
-      border-top: 1px solid #304653;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 8px 7px 17px;
+      background: #111e2d;
+      border: 1px solid #263d55;
+      border-radius: 18px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      transition: border 0.2s;
+    }
+
+    form:focus-within {
+      border-color: #477eae;
     }
 
     input {
       flex: 1;
       min-width: 0;
-      padding: 13px 15px;
-      border: 1px solid #405966;
-      border-radius: 24px;
+      background: transparent;
+      border: none;
       outline: none;
-      background: #243743;
-      color: white;
-      font-size: 16px;
+      color: #edf4ff;
+      font: inherit;
+      font-size: 14px;
+      padding: 10px 0;
     }
 
-    input::placeholder { color: #9aadb8; }
+    input::placeholder {
+      color: #647991;
+    }
 
     button {
-      padding: 0 21px;
+      width: 43px;
+      height: 43px;
       border: none;
-      border-radius: 24px;
-      background: #477c9b;
+      border-radius: 13px;
+      background: linear-gradient(145deg, #4a8bc0, #28608e);
       color: white;
-      font-size: 15px;
+      font-size: 19px;
       cursor: pointer;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
     }
 
     button:disabled {
-      opacity: 0.5;
+      opacity: 0.45;
       cursor: default;
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 11px;
+      color: #53677d;
+      font-size: 10px;
+      letter-spacing: 0.4px;
+    }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(7px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      from { opacity: 0.3; transform: translateY(0); }
+      to { opacity: 1; transform: translateY(-3px); }
+    }
+
+    @media (max-width: 600px) {
+      .app {
+        padding: 0 15px;
+      }
+
+      header {
+        padding: 20px 0 17px;
+      }
+
+      h1 {
+        font-size: 17px;
+      }
+
+      .message {
+        max-width: 90%;
+      }
+
+      #chat {
+        padding-top: 22px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <header>
-    <h1>De installatie</h1>
-    <p>Een kleine kunstfestival-installatie, omringd door blauwe lakens</p>
-  </header>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="brand-mark">✳</div>
+        <div>
+          <h1>THE CONNECTION</h1>
+          <div class="subtitle">A SPACE TO CONNECT</div>
+        </div>
+      </div>
 
-  <main id="chat"></main>
-  <div id="typing"></div>
+      <div class="status">
+        <span class="status-dot"></span>
+        LIVE CHAT
+      </div>
+    </header>
 
-  <form id="messageForm">
-    <input
-      id="messageInput"
-      type="text"
-      placeholder="Typ een bericht..."
-      autocomplete="off"
-      required
-    >
-    <button id="sendButton" type="submit">Stuur</button>
-  </form>
+    <main id="chat">
+      <div class="date-label">THE CONVERSATION</div>
+    </main>
+
+    <div id="typing"></div>
+
+    <div class="composer">
+      <form id="messageForm">
+        <input
+          id="messageInput"
+          type="text"
+          placeholder="Schrijf iets..."
+          autocomplete="off"
+          required
+        >
+        <button id="sendButton" type="submit" aria-label="Verstuur">↑</button>
+      </form>
+      <div class="footer-note">EVERY CONVERSATION STARTS SOMEWHERE</div>
+    </div>
+  </div>
 
   <script>
     const chat = document.getElementById("chat");
@@ -188,7 +365,7 @@
     }
 
     async function getReply(character) {
-      typing.textContent = "Een Persoon typt...";
+      typing.innerHTML = 'Een Persoon typt <span class="typing-dots"><span></span><span></span><span></span></span>';
 
       try {
         const response = await fetch("/chat", {
