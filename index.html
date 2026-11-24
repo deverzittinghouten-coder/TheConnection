@@ -12,9 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -22,7 +20,7 @@
       background:
         radial-gradient(ellipse at 50% -15%, rgba(47, 103, 160, 0.23), transparent 55%),
         #080e19;
-      color: #edf4ff;
+      color: #fdf4ff;
       font-family: "DM Sans", sans-serif;
     }
 
@@ -178,13 +176,8 @@
       animation: pulse 1s infinite alternate;
     }
 
-    .typing-dots span:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-
-    .typing-dots span:nth-child(3) {
-      animation-delay: 0.4s;
-    }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
 
     .composer {
       padding: 14px 0 22px;
@@ -203,9 +196,7 @@
       transition: border 0.2s;
     }
 
-    form:focus-within {
-      border-color: #477eae;
-    }
+    form:focus-within { border-color: #477eae; }
 
     input {
       flex: 1;
@@ -219,9 +210,7 @@
       padding: 10px 0;
     }
 
-    input::placeholder {
-      color: #647991;
-    }
+    input::placeholder { color: #647991; }
 
     button {
       width: 43px;
@@ -235,14 +224,8 @@
       transition: transform 0.2s, opacity 0.2s;
     }
 
-    button:hover {
-      transform: translateY(-2px);
-    }
-
-    button:disabled {
-      opacity: 0.45;
-      cursor: default;
-    }
+    button:hover { transform: translateY(-2px); }
+    button:disabled { opacity: 0.45; cursor: default; }
 
     .footer-note {
       text-align: center;
@@ -263,25 +246,11 @@
     }
 
     @media (max-width: 600px) {
-      .app {
-        padding: 0 15px;
-      }
-
-      header {
-        padding: 20px 0 17px;
-      }
-
-      h1 {
-        font-size: 17px;
-      }
-
-      .message {
-        max-width: 90%;
-      }
-
-      #chat {
-        padding-top: 22px;
-      }
+      .app { padding: 0 15px; }
+      header { padding: 20px 0 17px; }
+      h1 { font-size: 17px; }
+      .message { max-width: 90%; }
+      #chat { padding-top: 22px; }
     }
   </style>
 </head>
@@ -336,6 +305,7 @@
     let history = [];
     let busy = false;
     let idleTimer = null;
+    let typingTimer = null;
     let lastSpeaker = "";
     let conversationTurns = 0;
 
@@ -356,7 +326,6 @@
       chat.appendChild(message);
 
       chat.scrollTop = chat.scrollHeight;
-
       history.push({ text, speaker });
 
       if (history.length > 50) {
@@ -367,6 +336,13 @@
     function showTyping() {
       typing.innerHTML =
         'Een Persoon typt <span class="typing-dots"><span></span><span></span><span></span></span>';
+    }
+
+    function clearTimers() {
+      clearTimeout(idleTimer);
+      clearTimeout(typingTimer);
+      idleTimer = null;
+      typingTimer = null;
     }
 
     function wait(ms) {
@@ -383,6 +359,15 @@
       const choices = possible.length ? possible : participants;
 
       return choices[Math.floor(Math.random() * choices.length)];
+    }
+
+    async function pauseBeforeReply() {
+      // Eerst is het even stil.
+      await wait(1500 + Math.random() * 2500);
+
+      // Daarna lijkt iemand na te denken en te typen.
+      showTyping();
+      await wait(3000 + Math.random() * 3000);
     }
 
     async function getReply(character) {
@@ -414,6 +399,7 @@
 
         addMessage(reply, false, character);
         lastSpeaker = character;
+        typing.textContent = "";
 
         return true;
 
@@ -425,16 +411,26 @@
     }
 
     function scheduleNextConversation(delay) {
-      clearTimeout(idleTimer);
+      clearTimers();
 
       if (conversationTurns <= 0) {
         typing.textContent = "";
         return;
       }
 
+      // Tijdens de stilte verschijnt de typ-indicator pas later.
+      const typingDelay = Math.max(
+        1000,
+        delay - (4000 + Math.random() * 4000)
+      );
+
+      typingTimer = setTimeout(() => {
+        if (!busy) showTyping();
+      }, typingDelay);
+
       idleTimer = setTimeout(async () => {
         if (busy) {
-          scheduleNextConversation(3000);
+          scheduleNextConversation(5000 + Math.random() * 5000);
           return;
         }
 
@@ -452,9 +448,9 @@
 
         conversationTurns--;
 
-        // Een ander personage krijgt soms de ruimte om te reageren.
+        // Soms neemt een andere deelnemer daarna nog het woord.
         if (conversationTurns > 0 && Math.random() < 0.7) {
-          scheduleNextConversation(5000 + Math.random() * 9000);
+          scheduleNextConversation(18000 + Math.random() * 17000);
         } else {
           conversationTurns = 0;
           typing.textContent = "";
@@ -466,7 +462,7 @@
     async function startConversation() {
       setBusy(true);
 
-      await wait(1200);
+      await pauseBeforeReply();
 
       const firstPerson = chooseParticipant();
       const success = await getReply(firstPerson);
@@ -474,9 +470,8 @@
       setBusy(false);
 
       if (success) {
-        // Aan het begin kunnen twee anderen rustig op elkaar reageren.
         conversationTurns = 2;
-        scheduleNextConversation(6000 + Math.random() * 5000);
+        scheduleNextConversation(18000 + Math.random() * 17000);
       } else {
         typing.textContent = "";
       }
@@ -489,7 +484,8 @@
 
       if (!message || busy) return;
 
-      clearTimeout(idleTimer);
+      clearTimers();
+      typing.textContent = "";
       conversationTurns = 0;
 
       addMessage(message, true, "bezoeker");
@@ -497,19 +493,21 @@
 
       setBusy(true);
 
-      // Eerst reageert één persoon op de bezoeker.
+      // Ook na een bericht van de bezoeker nemen ze even de tijd.
+      await pauseBeforeReply();
+
       const firstPerson = chooseParticipant();
       const firstSuccess = await getReply(firstPerson);
 
       setBusy(false);
 
       if (firstSuccess) {
-        // Daarna krijgt soms een andere deelnemer het woord.
         conversationTurns = 2;
-        scheduleNextConversation(5000 + Math.random() * 8000);
+        scheduleNextConversation(18000 + Math.random() * 17000);
+      } else {
+        typing.textContent = "";
       }
 
-      typing.textContent = "";
       input.focus();
     });
 
