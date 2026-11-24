@@ -44,7 +44,7 @@
     }
 
     .message {
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       max-width: 85%;
     }
 
@@ -55,10 +55,10 @@
     }
 
     .message .bubble {
-      padding: 12px 15px;
+      padding: 10px 14px;
       border-radius: 14px;
       background: #243743;
-      line-height: 1.5;
+      line-height: 1.4;
       overflow-wrap: anywhere;
     }
 
@@ -159,7 +159,7 @@
     let history = [];
     let busy = false;
     let idleTimer = null;
-    let autoRemaining = 2;
+    let autoRemaining = 3;
     let lastSpeaker = "";
 
     function addMessage(text, isMe = false, speaker = "bezoeker") {
@@ -229,10 +229,10 @@
       busy = true;
 
       await getReply("A");
-      await wait(1200);
+      await wait(900);
 
       await getReply("B");
-      await wait(1200);
+      await wait(900);
 
       await getReply("C");
 
@@ -263,7 +263,7 @@
         busy = false;
         typing.textContent = "";
         scheduleIdle();
-      }, 14000 + Math.random() * 9000);
+      }, 6000 + Math.random() * 5000);
     }
 
     form.addEventListener("submit", async event => {
@@ -285,7 +285,7 @@
       const order = participants.filter(p => p !== lastSpeaker);
 
       for (const character of order) {
-        await wait(1000 + Math.random() * 1000);
+        await wait(800 + Math.random() * 700);
         await getReply(character);
       }
 
