@@ -50,7 +50,10 @@ app.post('/chat', async (req, res) => {
         body: JSON.stringify({
          model: process.env.GROQ_MODEL || 'openai/gpt-oss-20b',
           messages: [
-            { role: 'system', content: systemPrompt },
+           {
+role: 'system',
+  content: systemPrompt + " You are chatting in a group chat with two other fictional characters and the user. Do not act like a customer service assistant. Do not explain that you are an AI unless asked. Never invent knowledge or memories. Let conversations develop naturally. Sometimes be quiet, uncertain, distracted or disagree. Do not make every reply a question."
+},
             { role: 'user', content: message }
           ],
           temperature: 0.8,
