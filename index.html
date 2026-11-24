@@ -196,13 +196,6 @@ body{
   min-height:17px
 }
 
-.foot{
-  font-size:10px;
-  color:#686870;
-  text-align:center;
-  padding:0 10px 8px
-}
-
 .system{
   align-self:center;
   color:#777;
@@ -248,7 +241,6 @@ body{
       <input id="message" placeholder="Typ een bericht..." maxlength="1000" autocomplete="off">
       <button class="send" id="send" aria-label="Verstuur">↑</button>
     </div>
-
   </div>
 
 </div>
@@ -267,12 +259,6 @@ body{
 
   let username='';
   let history=[];
-
-  const colors={
-    Noah:'#b5a08d',
-    Mila:'#b2a3d8',
-    Jay:'#8cb8a7'
-  };
 
   function addMessage(who,text,mine=false){
     const el=document.createElement('div');
@@ -303,9 +289,19 @@ body{
     welcome.style.display='none';
     chat.style.display='flex';
 
-    addMessage('Mila','Hé, welkom in de chat! 😊');
-    addMessage('Jay','Een nieuw gezicht, gezellig. Hoe is je dag?');
-    addMessage('Noah','Hee '+username+'. Welkom!');
+    const greetings=[
+      ['Mila','Hé, welkom in de chat.'],
+      ['Jay','Een nieuw gezicht. Hoe is je dag?'],
+      ['Noah','Hee '+username+'. Welkom.']
+    ];
+
+    greetings.forEach(([character,message])=>{
+      addMessage(character,message);
+      history.push({
+        role:'assistant',
+        content:character+': '+message
+      });
+    });
 
     input.focus();
   }
@@ -317,15 +313,26 @@ body{
 
     addMessage(username,text,true);
     input.value='';
+
     sendBtn.disabled=true;
     sendBtn.classList.add('disabled');
     typing.textContent='Noah, Mila en Jay typen...';
 
-    history.push({role:'user',content:text});
+    history.push({
+      role:'user',
+      content:text
+    });
 
     try{
-      for(const [index, character] of ['Noah','Mila','Jay'].entries()){
-  await new Promise(resolve => setTimeout(resolve, [2000,4000,5000][index]));
+      const characters=['Noah','Mila','Jay'];
+      const delays=[1500,3000,4500];
+
+      for(let index=0;index<characters.length;index++){
+        const character=characters[index];
+
+        await new Promise(resolve=>
+          setTimeout(resolve,delays[index])
+        );
 
         const response=await fetch('/chat',{
           method:'POST',
@@ -334,7 +341,8 @@ body{
           },
           body:JSON.stringify({
             character:character,
-            message:text
+            message:text,
+            history:history
           })
         });
 
