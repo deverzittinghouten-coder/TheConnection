@@ -96,6 +96,7 @@ GEDRAG:
 
 ONTWIKKELING VAN HET GESPREK:
 - Het gesprek mag zich langzaam ontwikkelen van oppervlakkig naar persoonlijker en dieper.
+- Begin eerst met kort hallo of hoi zeggen.
 - Begin meestal met gewone, alledaagse onderwerpen.
 - Naarmate deelnemers zich meer op hun gemak voelen, mogen gesprekken persoonlijker worden.
 - Praat soms over herinneringen, relaties, onzekerheden, dromen, keuzes, eenzaamheid, geluk of wat iemand belangrijk vindt.
