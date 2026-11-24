@@ -82,12 +82,10 @@ body{
   background:#aa96ff;color:#19151f;font-size:20px;
   font-weight:700;cursor:pointer
 }
-.typing{font-size:11px;color:#777;padding:0 16px 8px;min-height:17px}
-.system{
-  align-self:center;color:#777;font-size:11px;
-  padding:6px 10px;text-align:center
+.typing{
+  font-size:11px;color:#777;
+  padding:0 16px 8px;min-height:17px
 }
-.error{color:#e4a0a0}
 .disabled{opacity:.55;cursor:wait}
 </style>
 </head>
@@ -134,10 +132,16 @@ body{
   const typing=$('typing');
   const sendBtn=$('send');
 
+  const characters=['Noah','Mila','Jay'];
+
   let username='';
   let history=[];
+  let busy=false;
+  let idleTimer=null;
+  let spontaneousCount=0;
+  let lastSpeaker='';
 
-  const characters=['Noah','Mila','Jay'];
+  const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 
   function addMessage(who,text,mine=false){
     const el=document.createElement('div');
@@ -156,7 +160,6 @@ body{
     feed.scrollTop=feed.scrollHeight;
   }
 
-  // Haalt een onnodige naam aan het begin van een antwoord weg.
   function cleanReply(text){
     let cleaned=String(text||'').trim();
 
@@ -166,6 +169,87 @@ body{
     }
 
     return cleaned.trim();
+  }
+
+  function addToHistory(role,content){
+    history.push({role,content});
+    history=history.slice(-24);
+  }
+
+  function chooseCharacter(){
+    const options=characters.filter(name=>name!==lastSpeaker);
+    return options[Math.floor(Math.random()*options.length)];
+  }
+
+  function cancelIdle(){
+    if(idleTimer){
+      clearTimeout(idleTimer);
+      idleTimer=null;
+    }
+  }
+
+  function scheduleIdle(){
+    cancelIdle();
+
+    if(spontaneousCount>=4)return;
+
+    idleTimer=setTimeout(async()=>{
+      if(busy)return;
+
+      const character=chooseCharacter();
+      await getReply(character,true);
+
+      if(spontaneousCount<4){
+        scheduleIdle();
+      }
+    },12000+Math.floor(Math.random()*7000));
+  }
+
+  async function getReply(character,autonomous=false){
+    try{
+      typing.textContent=character+' is aan het typen...';
+
+      const response=await fetch('/chat',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          character,
+          history,
+          autonomous
+        })
+      });
+
+      if(!response.ok){
+        console.error('Bericht niet ontvangen:',character,response.status);
+        return false;
+      }
+
+      const data=await response.json();
+      const reply=cleanReply(data.reply||'');
+
+      if(!reply)return false;
+
+      addMessage(character,reply);
+
+      addToHistory(
+        'assistant',
+        character+': '+reply
+      );
+
+      lastSpeaker=character;
+
+      if(autonomous){
+        spontaneousCount++;
+      }
+
+      return true;
+
+    }catch(error){
+      console.error('Chatverzoek mislukt:',error);
+      return false;
+    }finally{
+      typing.textContent='';
+    }
   }
 
   function join(){
@@ -188,10 +272,7 @@ body{
 
     greetings.forEach(([character,message])=>{
       addMessage(character,message);
-      history.push({
-        role:'assistant',
-        content:character+': '+message
-      });
+      addToHistory('assistant',character+': '+message);
     });
 
     input.focus();
@@ -200,78 +281,34 @@ body{
   async function send(){
     const text=input.value.trim();
 
-    if(!text||sendBtn.disabled)return;
+    if(!text||busy)return;
+
+    cancelIdle();
+    spontaneousCount=0;
 
     addMessage(username,text,true);
-    input.value='';
+    addToHistory('user',text);
 
+    input.value='';
+    busy=true;
     sendBtn.disabled=true;
     sendBtn.classList.add('disabled');
-    typing.textContent='Noah, Mila en Jay typen...';
-
-    history.push({
-      role:'user',
-      content:text
-    });
 
     try{
-      const delays=[1500,3000,4500];
+      for(const character of characters){
+        if(character==='Mila')await wait(1800);
+        if(character==='Jay')await wait(1800);
 
-      for(let index=0;index<characters.length;index++){
-        const character=characters[index];
-
-        await new Promise(resolve=>
-          setTimeout(resolve,delays[index])
-        );
-
-        const response=await fetch('/chat',{
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({
-            character:character,
-            message:text,
-            history:history
-          })
-        });
-
-        const data=await response.json();
-
-        if(!response.ok){
-          throw new Error(data.error||'Er is een fout opgetreden.');
-        }
-
-        if(!data.reply){
-          throw new Error('Geen antwoord ontvangen van '+character+'.');
-        }
-
-        const reply=cleanReply(data.reply);
-
-        if(!reply){
-          throw new Error('Leeg antwoord ontvangen van '+character+'.');
-        }
-
-        addMessage(character,reply);
-
-        history.push({
-          role:'assistant',
-          content:character+': '+reply
-        });
+        await getReply(character,false);
       }
-
-      history=history.slice(-24);
-
-    }catch(err){
-      const e=document.createElement('div');
-      e.className='system error';
-      e.textContent=err.message;
-      feed.appendChild(e);
-      feed.scrollTop=feed.scrollHeight;
-
     }finally{
-      typing.textContent='';
+      busy=false;
       sendBtn.disabled=false;
       sendBtn.classList.remove('disabled');
+      typing.textContent='';
       input.focus();
+
+      scheduleIdle();
     }
   }
 
