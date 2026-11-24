@@ -336,8 +336,8 @@
     let history = [];
     let busy = false;
     let idleTimer = null;
-    let autoRemaining = 3;
     let lastSpeaker = "";
+    let conversationTurns = 0;
 
     function addMessage(text, isMe = false, speaker = "bezoeker") {
       const message = document.createElement("div");
@@ -364,8 +364,29 @@
       }
     }
 
+    function showTyping() {
+      typing.innerHTML =
+        'Een Persoon typt <span class="typing-dots"><span></span><span></span><span></span></span>';
+    }
+
+    function wait(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function setBusy(value) {
+      busy = value;
+      sendButton.disabled = value;
+    }
+
+    function chooseParticipant() {
+      const possible = participants.filter(person => person !== lastSpeaker);
+      const choices = possible.length ? possible : participants;
+
+      return choices[Math.floor(Math.random() * choices.length)];
+    }
+
     async function getReply(character) {
-      typing.innerHTML = 'Een Persoon typt <span class="typing-dots"><span></span><span></span><span></span></span>';
+      showTyping();
 
       try {
         const response = await fetch("/chat", {
@@ -380,67 +401,85 @@
         });
 
         if (!response.ok) {
-          throw new Error("Er ging iets mis met het antwoord.");
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || "De AI kon niet antwoorden.");
         }
 
         const data = await response.json();
         const reply = (data.reply || "").trim();
 
-        if (reply) {
-          addMessage(reply, false, character);
-          lastSpeaker = character;
-          return true;
+        if (!reply) {
+          throw new Error("De AI gaf een leeg antwoord.");
         }
+
+        addMessage(reply, false, character);
+        lastSpeaker = character;
+
+        return true;
+
       } catch (error) {
-        console.error(error);
+        console.error("Chatfout:", error);
+        typing.textContent = "Er ging iets mis met de verbinding.";
+        return false;
       }
-
-      return false;
     }
 
-    function wait(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    async function startConversation() {
-      busy = true;
-
-      await getReply("A");
-      await wait(900);
-
-      await getReply("B");
-      await wait(900);
-
-      await getReply("C");
-
-      busy = false;
-      typing.textContent = "";
-      scheduleIdle();
-    }
-
-    function scheduleIdle() {
+    function scheduleNextConversation(delay) {
       clearTimeout(idleTimer);
 
-      if (autoRemaining <= 0) return;
+      if (conversationTurns <= 0) {
+        typing.textContent = "";
+        return;
+      }
 
       idleTimer = setTimeout(async () => {
         if (busy) {
-          scheduleIdle();
+          scheduleNextConversation(3000);
           return;
         }
 
-        busy = true;
-        autoRemaining--;
+        setBusy(true);
 
-        const possible = participants.filter(p => p !== lastSpeaker);
-        const next = possible[Math.floor(Math.random() * possible.length)];
+        const nextPerson = chooseParticipant();
+        const success = await getReply(nextPerson);
 
-        await getReply(next);
+        setBusy(false);
 
-        busy = false;
+        if (!success) {
+          typing.textContent = "";
+          return;
+        }
+
+        conversationTurns--;
+
+        // Een ander personage krijgt soms de ruimte om te reageren.
+        if (conversationTurns > 0 && Math.random() < 0.7) {
+          scheduleNextConversation(5000 + Math.random() * 9000);
+        } else {
+          conversationTurns = 0;
+          typing.textContent = "";
+        }
+
+      }, delay);
+    }
+
+    async function startConversation() {
+      setBusy(true);
+
+      await wait(1200);
+
+      const firstPerson = chooseParticipant();
+      const success = await getReply(firstPerson);
+
+      setBusy(false);
+
+      if (success) {
+        // Aan het begin kunnen twee anderen rustig op elkaar reageren.
+        conversationTurns = 2;
+        scheduleNextConversation(6000 + Math.random() * 5000);
+      } else {
         typing.textContent = "";
-        scheduleIdle();
-      }, 6000 + Math.random() * 5000);
+      }
     }
 
     form.addEventListener("submit", async event => {
@@ -451,25 +490,26 @@
       if (!message || busy) return;
 
       clearTimeout(idleTimer);
+      conversationTurns = 0;
 
       addMessage(message, true, "bezoeker");
       input.value = "";
 
-      busy = true;
-      sendButton.disabled = true;
-      autoRemaining = 3;
+      setBusy(true);
 
-      const order = participants.filter(p => p !== lastSpeaker);
+      // Eerst reageert één persoon op de bezoeker.
+      const firstPerson = chooseParticipant();
+      const firstSuccess = await getReply(firstPerson);
 
-      for (const character of order) {
-        await wait(800 + Math.random() * 700);
-        await getReply(character);
+      setBusy(false);
+
+      if (firstSuccess) {
+        // Daarna krijgt soms een andere deelnemer het woord.
+        conversationTurns = 2;
+        scheduleNextConversation(5000 + Math.random() * 8000);
       }
 
-      busy = false;
-      sendButton.disabled = false;
       typing.textContent = "";
-      scheduleIdle();
       input.focus();
     });
 
