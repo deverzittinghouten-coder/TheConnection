@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -6,9 +7,7 @@
   <title>De installatie</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -109,9 +108,7 @@
       font-size: 16px;
     }
 
-    input::placeholder {
-      color: #9aadb8;
-    }
+    input::placeholder { color: #9aadb8; }
 
     button {
       padding: 0 21px;
@@ -165,7 +162,7 @@
     let autoRemaining = 2;
     let lastSpeaker = "";
 
-    function addMessage(text, isMe = false) {
+    function addMessage(text, isMe = false, speaker = "bezoeker") {
       const message = document.createElement("div");
       message.className = isMe ? "message me" : "message";
 
@@ -183,7 +180,7 @@
 
       chat.scrollTop = chat.scrollHeight;
 
-      history.push({ text });
+      history.push({ text, speaker });
 
       if (history.length > 50) {
         history = history.slice(-50);
@@ -213,7 +210,7 @@
         const reply = (data.reply || "").trim();
 
         if (reply) {
-          addMessage(reply);
+          addMessage(reply, false, character);
           lastSpeaker = character;
           return true;
         }
@@ -278,7 +275,7 @@
 
       clearTimeout(idleTimer);
 
-      addMessage(message, true);
+      addMessage(message, true, "bezoeker");
       input.value = "";
 
       busy = true;
