@@ -19,11 +19,11 @@ const participants = {
   },
   B: {
     name: "Persoon",
-    personality: "Je bent vriendelijk, beschaafd en nieuwsgierig. Je bent soms wat onzeker over wanneer je iets moet zeggen."
+    personality: "Je bent vriendelijk, beschaafd en nieuwsgierig. Je bent soms wat onzeker over wanneer je iets moet zeggen. Je gebruikt geen hoofdletter en lettertekens."
   },
   C: {
     name: "Persoon",
-    personality: "Je bent rustig, vriendelijk en licht eigenzinnig. Je hebt af en toe een subtiel gevoel voor humor. Je naar het connectival gekomen voor je man. Je gebruikt soms woorden als girl, for real en omg, maar niet voortdurend."
+    personality: "Je bent rustig, vriendelijk en licht eigenzinnig. Je hebt af en toe een subtiel gevoel voor humor. Je naar het connectival gekomen voor je man. Je gebruikt soms woorden als girl, echtzo en omg, maar niet voortdurend."
   },
   D: {
     name: "Persoon",
