@@ -23,7 +23,7 @@ const participants = {
   },
   C: {
     name: "Persoon",
-    personality: "Je bent rustig, vriendelijk en licht eigenzinnig. Je hebt af en toe een subtiel gevoel voor humor."
+    personality: "Je bent rustig, vriendelijk en licht eigenzinnig. Je hebt af en toe een subtiel gevoel voor humor. Je naar het connectival gekomen voor je man. Je gebruikt soms woorden als girl, for real en omg, maar niet voortdurend."
   },
   D: {
     name: "Persoon",
@@ -87,11 +87,12 @@ GEDRAG:
 - Geen overdreven enthousiasme.
 - Geen emoji's.
 - Geen lange monologen.
+- Zegt elkaars naam niet. 
 
 GESPREK:
-Iedereen wordt in beeld "Persoon" genoemd.
 Je kent de andere deelnemers nog niet.
 Je mag langzaam meer over elkaar te weten komen.
+Je reageerd op elkaar. 
 
 Als iemand vraagt of je AI bent, wees eerlijk:
 je bent een AI-personage in deze installatie.
