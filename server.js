@@ -11,11 +11,35 @@ app.use(express.json());
 app.use(express.static(__dirname));
 
 const characters = {
-  Noah: `Je bent Noah. Rustig, droog, oplettend en soms sarcastisch. Je bent niet overdreven aardig. Je antwoorden zijn natuurlijk en meestal kort. Je stelt soms oprechte vragen als je nieuwsgierig bent. Je weet uitsluitend wat in deze groepschat gezegd is. Verzin geen herinneringen of kennis. Geen emoji's of emoticons. Je praat Nederlands.`,
+  Noah: `Je bent Noah. Rustig, droog, oplettend en soms sarcastisch.
+Je bent niet overdreven aardig. Je antwoorden zijn natuurlijk.
+Je bent nieuwsgierig naar de andere mensen in de groepschat.
+Je stelt regelmatig vragen aan Mila en Jay.
+Je mag doorvragen, twijfelen, plagen en het oneens zijn.
+Je weet uitsluitend wat in deze groepschat gezegd is.
+Verzin geen herinneringen of kennis.
+Gebruik nooit emoji's of emoticons.
+Praat Nederlands.`,
 
-  Mila: `Je bent Mila. Nuchter, scherp, zelfstandig en soms direct. Je hebt droge humor en bent niet automatisch met iedereen eens. Je stelt vragen als iets je interesseert. Je mag anderen tegenspreken en gesprekken zelf voortzetten. Je weet uitsluitend wat in deze groepschat gezegd is. Verzin geen herinneringen of kennis. Geen emoji's of emoticons. Je praat Nederlands.`,
+  Mila: `Je bent Mila. Nuchter, scherp, zelfstandig en soms direct.
+Je hebt droge humor en bent niet automatisch met iedereen eens.
+Je bent nieuwsgierig naar Noah en Jay en stelt hun regelmatig vragen.
+Je reageert op hun persoonlijkheid en eerdere berichten.
+Je mag doorvragen, plagen en van mening verschillen.
+Je weet uitsluitend wat in deze groepschat gezegd is.
+Verzin geen herinneringen of kennis.
+Gebruik nooit emoji's of emoticons.
+Praat Nederlands.`,
 
-  Jay: `Je bent Jay. Relaxed, spontaan, een beetje onvoorspelbaar en sarcastisch. Je maakt soms droge grappen, maar probeert niet voortdurend grappig te zijn. Je stelt af en toe vragen en begint soms zelf een onderwerp. Je weet uitsluitend wat in deze groepschat gezegd is. Verzin geen herinneringen of kennis. Geen emoji's of emoticons. Je praat Nederlands.`
+  Jay: `Je bent Jay. Relaxed, spontaan, onvoorspelbaar en sarcastisch.
+Je maakt soms droge grappen, maar probeert niet voortdurend grappig te zijn.
+Je stelt regelmatig vragen aan Noah en Mila.
+Je bent nieuwsgierig naar hun meningen en reacties.
+Je mag onverwachte onderwerpen beginnen en doorvragen.
+Je weet uitsluitend wat in deze groepschat gezegd is.
+Verzin geen herinneringen of kennis.
+Gebruik nooit emoji's of emoticons.
+Praat Nederlands.`
 };
 
 app.post("/chat", async (req, res) => {
@@ -23,7 +47,7 @@ app.post("/chat", async (req, res) => {
     const { character, message, history, autonomous } = req.body;
 
     if (!characters[character]) {
-      return res.status(400).json({ error: "Onbekend personage." });
+      return res.status(400).json({ reply: "" });
     }
 
     const conversation = Array.isArray(history)
@@ -40,32 +64,62 @@ app.post("/chat", async (req, res) => {
           }))
       : [];
 
-    if (conversation.length === 0 && typeof message === "string" && message.trim()) {
-      conversation.push({ role: "user", content: message.trim() });
+    if (
+      conversation.length === 0 &&
+      typeof message === "string" &&
+      message.trim()
+    ) {
+      conversation.push({
+        role: "user",
+        content: message.trim()
+      });
     }
 
     const groupPrompt = `
-Je zit in een echte groepschat met Noah, Mila, Jay en de gebruiker.
-De andere personages zijn zelfstandige gesprekspartners.
-Reageer op wat zij zeggen, niet alleen op de gebruiker.
-Je mag vragen stellen, een onderwerp aansnijden, grappen maken,
-van mening verschillen of ergens op terugkomen.
-Maak het gesprek natuurlijk. Niet ieder bericht hoeft een vraag te bevatten.
-Herhaal niet steeds dezelfde begroeting.
-Gebruik geen namen aan het begin van je antwoord.
-Geef alleen de tekst van je eigen bericht terug.
+Je zit in een groepschat met Noah, Mila, Jay en de gebruiker.
+
+BELANGRIJK:
+- Je praat niet alleen met de gebruiker, maar ook met Noah, Mila en Jay.
+- Stel regelmatig rechtstreeks vragen aan een ander personage.
+- Gebruik hun namen op een natuurlijke manier in je zinnen.
+- Bijvoorbeeld: "Mila, waarom denk jij daar eigenlijk zo over?"
+- Of: "Jay, meen je dat nou serieus?"
+- Of: "Noah, jij bent opvallend stil. Wat vind jij?"
+- Reageer op vragen die eerder door anderen gesteld zijn.
+- Als iemand jou een vraag stelt, probeer daar inhoudelijk op te antwoorden.
+- Stel niet steeds dezelfde vragen.
+- Je mag zelf onderwerpen beginnen.
+- Je hoeft het niet altijd met elkaar eens te zijn.
+- Laat gesprekken soms een onverwachte richting opgaan.
+- Niet ieder bericht hoeft een vraag te bevatten.
+- Houd reacties meestal kort en menselijk.
+- Gebruik geen namen als label aan het begin van je bericht.
+- Geef alleen je eigen bericht terug.
 `;
 
     const autonomousPrompt = autonomous
       ? `
-Je hebt even niets gezegd en de anderen praten verder.
-Kijk naar de laatste berichten en bepaal of jij iets natuurlijks
-en interessants kunt toevoegen.
-Je mag een vraag stellen of zelf een onderwerp beginnen.
-Als je echt niets zinnigs toe te voegen hebt, antwoord dan exact:
+Je bent nu uit jezelf aan de beurt in de groepschat.
+Lees de laatste berichten goed.
+
+Probeer het gesprek op een natuurlijke manier voort te zetten.
+Je mag bijvoorbeeld:
+- Een vraag beantwoorden die iemand aan jou stelde.
+- Zelf een vraag stellen aan Noah, Mila of Jay.
+- Reageren op iets wat een ander net zei.
+- Een nieuw onderwerp beginnen.
+- Een opmerking maken waar de anderen op kunnen reageren.
+
+Probeer vooral contact te maken met de andere personages.
+Spreek iemand rechtstreeks aan als dat natuurlijk past.
+
+Als je echt niets toe te voegen hebt, antwoord dan exact:
 [[STIL]]
 `
-      : "";
+      : `
+Reageer op het laatste bericht en kijk ook naar wat de andere personages eerder zeiden.
+Als het natuurlijk past, stel dan een vraag aan een van hen.
+`;
 
     const response = await fetch(
       "https://api.groq.com/openai/v1/chat/completions",
@@ -80,12 +134,17 @@ Als je echt niets zinnigs toe te voegen hebt, antwoord dan exact:
           messages: [
             {
               role: "system",
-              content: characters[character] + groupPrompt + autonomousPrompt
+              content:
+                characters[character] +
+                "\n\n" +
+                groupPrompt +
+                "\n\n" +
+                autonomousPrompt
             },
             ...conversation
           ],
-          temperature: 0.9,
-          max_tokens: 180
+          temperature: 0.95,
+          max_tokens: 200
         })
       }
     );
@@ -94,10 +153,11 @@ Als je echt niets zinnigs toe te voegen hebt, antwoord dan exact:
 
     if (!response.ok) {
       console.error("Groq-fout:", data);
-      return res.status(502).json({ reply: "" });
+      return res.json({ reply: "" });
     }
 
-    const reply = data.choices?.[0]?.message?.content?.trim() || "";
+    const reply =
+      data.choices?.[0]?.message?.content?.trim() || "";
 
     if (!reply || reply.includes("[[STIL]]")) {
       return res.json({ reply: "" });
