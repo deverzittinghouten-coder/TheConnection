@@ -1,10 +1,31 @@
 
 <script>
-  const chat = document.getElementById("chat");
-  const form = document.getElementById("messageForm");
-  const input = document.getElementById("messageInput");
-  const sendButton = document.getElementById("sendButton");
+document.addEventListener("DOMContentLoaded", () => {
+  // Elementen automatisch zoeken
+  const chat = document.getElementById("chat") || document.querySelector(".chat");
+  const input =
+    document.getElementById("messageInput") ||
+    document.querySelector('input[type="text"]') ||
+    document.querySelector("textarea");
+
+  const sendButton =
+    document.getElementById("sendButton") ||
+    document.querySelector('button[type="submit"]');
+
+  const form =
+    document.getElementById("messageForm") ||
+    (input ? input.closest("form") : null) ||
+    document.querySelector("form");
+
   const typing = document.getElementById("typing");
+
+  console.log("The Connection elementen:", {
+    chat,
+    input,
+    sendButton,
+    form,
+    typing
+  });
 
   const participants = ["A", "B", "C", "D"];
   const CHAT_DURATION = 4 * 60 * 1000;
@@ -16,7 +37,10 @@
   let conversationStartedAt = Date.now();
 
   function addMessage(text, isMe = false, speaker = "bezoeker") {
-    if (!chat) return;
+    if (!chat) {
+      console.error("Chatvenster ontbreekt.");
+      return;
+    }
 
     const message = document.createElement("div");
     message.className = isMe ? "message me" : "message";
@@ -68,7 +92,6 @@
       possible = [...participants];
     }
 
-    // D krijgt iets vaker de kans om te reageren
     const choices = [...possible, "D"];
 
     return choices[Math.floor(Math.random() * choices.length)];
@@ -111,7 +134,6 @@
       if (typing) typing.textContent = "";
 
       return true;
-
     } catch (error) {
       console.error("Chatfout:", error);
 
@@ -122,7 +144,6 @@
       if (typing) typing.textContent = "";
 
       return false;
-
     } finally {
       clearTimeout(timeout);
     }
@@ -141,7 +162,6 @@
     }
   }
 
-  // Centrale automatische gespreksloop
   async function conversationLoop() {
     while (!chatEnded) {
       if (Date.now() - conversationStartedAt >= CHAT_DURATION) {
@@ -149,7 +169,6 @@
         break;
       }
 
-      // Pauze tussen berichten: 8 tot 19 seconden
       await wait(8000 + Math.random() * 11000);
 
       if (chatEnded) break;
@@ -168,24 +187,22 @@
 
       if (chatEnded) break;
 
-      if (success) {
-        continue;
+      if (!success) {
+        if (typing) typing.textContent = "";
+        console.warn("Opnieuw proberen...");
+        await wait(7000 + Math.random() * 5000);
       }
-
-      // Bij fouten automatisch verder proberen
-      if (typing) typing.textContent = "";
-
-      console.warn("Automatisch opnieuw proberen...");
-      await wait(7000 + Math.random() * 5000);
     }
   }
 
- // Bezoeker kan berichten sturen — formulier automatisch zoeken
-const actualForm = form || (input ? input.closest("form") : null);
+  // Bericht van bezoeker versturen
+  function sendVisitorMessage(event) {
+    if (event) event.preventDefault();
 
-if (actualForm && input) {
-  actualForm.addEventListener("submit", event => {
-    event.preventDefault();
+    if (!input) {
+      console.error("Invoerveld ontbreekt.");
+      return;
+    }
 
     const message = input.value.trim();
 
@@ -194,11 +211,26 @@ if (actualForm && input) {
     addMessage(message, true, "bezoeker");
     input.value = "";
     input.focus();
-  });
-} else {
-  console.error("Het chatformulier of invoerveld is niet gevonden.");
-}
+  }
 
-  // Start de chat precies één keer
+  // Formulier koppelen indien aanwezig
+  if (form) {
+    form.addEventListener("submit", sendVisitorMessage);
+  } else if (sendButton) {
+    // Alternatief als er geen formulier bestaat
+    sendButton.addEventListener("click", sendVisitorMessage);
+  }
+
+  // Enter verstuurt bericht bij een los invoerveld
+  if (input && !form) {
+    input.addEventListener("keydown", event => {
+      if (event.key === "Enter" && input.tagName !== "TEXTAREA") {
+        sendVisitorMessage(event);
+      }
+    });
+  }
+
+  // Start automatische AI-conversatie
   conversationLoop();
+});
 </script>
