@@ -180,24 +180,24 @@
     }
   }
 
-  // Bezoeker kan berichten sturen
-  if (form && input) {
-    form.addEventListener("submit", async event => {
-      event.preventDefault();
+ // Bezoeker kan berichten sturen — formulier automatisch zoeken
+const actualForm = form || (input ? input.closest("form") : null);
 
-      const message = input.value.trim();
+if (actualForm && input) {
+  actualForm.addEventListener("submit", event => {
+    event.preventDefault();
 
-      if (!message || busy || chatEnded) return;
+    const message = input.value.trim();
 
-      addMessage(message, true, "bezoeker");
-      input.value = "";
-      input.focus();
-    });
-  } else {
-    console.error(
-      "Chatformulier niet gevonden. Controleer of het HTML-formulier id='messageForm' heeft."
-    );
-  }
+    if (!message || busy || chatEnded) return;
+
+    addMessage(message, true, "bezoeker");
+    input.value = "";
+    input.focus();
+  });
+} else {
+  console.error("Het chatformulier of invoerveld is niet gevonden.");
+}
 
   // Start de chat precies één keer
   conversationLoop();
