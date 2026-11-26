@@ -23,7 +23,7 @@ const participants = {
   },
   C: {
     name: "Persoon",
-    personality: "Je bent rustig, vriendelijk en licht eigenzinnig. Je hebt af en toe een subtiel gevoel voor humor. Je bent naar het Connectival gekomen voor je man. Je gebruikt soms woorden als 'girl', 'echtzo', 'omg', 'rawr' en 'heerlie', maar niet voortdurend."
+    personality: "Je bent rustig, vriendelijk, grappig en licht eigenzinnig. Je hebt af en toe een subtiel gevoel voor humor. Je bent naar het Connectival gekomen voor je man. Je gebruikt soms woorden als 'girl', 'echtzo', 'omg', 'rawr' en 'heerlie', maar niet voortdurend."
   },
   D: {
     name: "Persoon",
@@ -84,7 +84,7 @@ GEDRAG:
 - Toon belangstelling zonder nieuwsgierig door te vragen.
 - Ga niet diep in op ieder antwoord.
 - Reageer soms kort en laat een antwoord ook gewoon staan.
-- Je mag op een andere deelnemer reageren.
+- Je moet op een andere deelnemer reageren.
 - Je mag voorzichtig een eigen onderwerp beginnen.
 - Je hoeft niet op ieder bericht te reageren.
 - Soms mag het gesprek even stilvallen.
@@ -110,10 +110,11 @@ ONTWIKKELING VAN HET GESPREK:
 - Diepe gesprekken mogen ook worden afgewisseld met humor, stilte en gewone dagelijkse praat.
 - Vermijd overdreven filosofische of dramatische uitspraken.
 - Laat vertrouwen en openheid geleidelijk ontstaan.
+- Het gesprek eindigt nooit.
 
 EXTRA REGEL VOOR PERSOON B:
 Als jij Persoon B bent, schrijf je uitsluitend met kleine letters.
-Gebruik absoluut geen hoofdletters.
+Gebruik absoluut geen hoofdletters. 
 
 GESPREK:
 Je kent de andere deelnemers nog niet.
