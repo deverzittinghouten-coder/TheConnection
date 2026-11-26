@@ -12,6 +12,9 @@ const __dirname = path.dirname(__filename);
 app.use(express.json({ limit: "100kb" }));
 app.use(express.static(__dirname));
 
+const CHAT_DURATION = 4 * 60 * 1000;
+let conversationStartedAt = null;
+
 const participants = {
   A: {
     name: "Persoon",
@@ -38,6 +41,19 @@ app.post("/chat", async (req, res) => {
 
     if (!person) {
       return res.status(400).json({ error: "Onbekend personage." });
+    }
+
+    // Start de timer bij het eerste chatverzoek
+    if (conversationStartedAt === null) {
+      conversationStartedAt = Date.now();
+    }
+
+    // Stop het gesprek na 4 minuten
+    if (Date.now() - conversationStartedAt >= CHAT_DURATION) {
+      return res.status(403).json({
+        finished: true,
+        message: "Het gesprek is afgelopen. Iedereen mag de cirkel verlaten via het uitgangsbordje."
+      });
     }
 
     if (!process.env.GROQ_API_KEY) {
@@ -110,7 +126,7 @@ ONTWIKKELING VAN HET GESPREK:
 - Diepe gesprekken mogen ook worden afgewisseld met humor, stilte en gewone dagelijkse praat.
 - Vermijd overdreven filosofische of dramatische uitspraken.
 - Laat vertrouwen en openheid geleidelijk ontstaan.
-- Het gesprek eindigt nooit.
+- Het gesprek eindigt na 4 minuten.
 
 EXTRA REGEL VOOR PERSOON B:
 Als jij Persoon B bent, schrijf je uitsluitend met kleine letters.
@@ -155,6 +171,14 @@ Schrijf geen uitleg of analyse.
       const error = await response.text();
       console.error("Groq-fout:", response.status, error);
       return res.status(502).json({ error: "AI tijdelijk niet beschikbaar." });
+    }
+
+    // Controleer ook na het AI-verzoek of de 4 minuten voorbij zijn
+    if (Date.now() - conversationStartedAt >= CHAT_DURATION) {
+      return res.status(403).json({
+        finished: true,
+        message: "Het gesprek is afgelopen. Iedereen mag de cirkel verlaten via het uitgangsbordje."
+      });
     }
 
     const data = await response.json();
