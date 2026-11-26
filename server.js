@@ -12,8 +12,9 @@ const __dirname = path.dirname(__filename);
 app.use(express.json({ limit: "100kb" }));
 app.use(express.static(__dirname));
 
-const CHAT_DURATION = 4 * 60 * 1000;
-let conversationStartedAt = null;
+// Maximaal 30 seconden per AI-aanvraag.
+// Een vastgelopen aanvraag wordt automatisch afgebroken.
+const REQUEST_TIMEOUT = 30000;
 
 const participants = {
   A: {
@@ -43,19 +44,6 @@ app.post("/chat", async (req, res) => {
       return res.status(400).json({ error: "Onbekend personage." });
     }
 
-    // Start de timer bij het eerste chatverzoek
-    if (conversationStartedAt === null) {
-      conversationStartedAt = Date.now();
-    }
-
-    // Stop het gesprek na 4 minuten
-    if (Date.now() - conversationStartedAt >= CHAT_DURATION) {
-      return res.status(403).json({
-        finished: true,
-        message: "Het gesprek is afgelopen. Iedereen mag de cirkel verlaten via het uitgangsbordje."
-      });
-    }
-
     if (!process.env.GROQ_API_KEY) {
       return res.status(500).json({ error: "AI-sleutel ontbreekt." });
     }
@@ -73,9 +61,7 @@ app.post("/chat", async (req, res) => {
       })
       .join("\n");
 
-
-
-const systemPrompt = `
+    const systemPrompt = `
 Je bent een echte deelnemer aan een sociale installatie op een klein kunstfestival in Nederland.
 
 PERSOONLIJKHEID:
@@ -104,7 +90,7 @@ BELANGRIJK: GEEN HERHALING
 - Zeg niet steeds dat iets herkenbaar, bijzonder, interessant of mooi is.
 - Herformuleer niet eerst uitgebreid wat een ander zojuist heeft gezegd.
 - Geef geen standaard empathische reacties.
-- Als je niets bijzonders toe te voegen hebt, reageer kort of reageer niet.
+- Als je niets bijzonders toe te voegen hebt, reageer kort.
 - Elk bericht moet iets nieuws toevoegen, al is het maar een kleine gedachte, observatie, ervaring, grap of vraag.
 - Controleer de gespreksgeschiedenis voordat je antwoord geeft en voorkom dat je iets zegt wat je al eerder hebt gezegd.
 
@@ -172,7 +158,6 @@ Je blijft je eigen karakter, humor, woordkeuze en houding behouden.
 Je gaat niet plotseling heel emotioneel of filosofisch praten.
 
 TIJD:
-Het gesprek duurt vier minuten.
 Je weet niet hoe laat het is.
 Je kondigt het einde niet aan.
 Je probeert het gesprek niet af te ronden.
@@ -184,41 +169,44 @@ Schrijf uitsluitend je volgende chatbericht in het Nederlands.
 Schrijf geen uitleg, geen analyse en geen Engelse tekst.
 `;
 
-    const response = await fetch(
-      "https://api.groq.com/openai/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.GROQ_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: process.env.GROQ_MODEL || "openai/gpt-oss-20b",
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: "Geef je volgende korte chatbericht." }
-          ],
-          reasoning_effort: "low",
-          include_reasoning: false,
-          temperature: 0.8,
-          max_completion_tokens: 300,
-          stream: false
-        })
-      }
-    );
+    // Zorg dat een vastgelopen verzoek nooit eindeloos blijft wachten.
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+
+    let response;
+
+    try {
+      response = await fetch(
+        "https://api.groq.com/openai/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${process.env.GROQ_API_KEY}`
+          },
+          signal: controller.signal,
+          body: JSON.stringify({
+            model: process.env.GROQ_MODEL || "openai/gpt-oss-20b",
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: "Geef je volgende korte chatbericht." }
+            ],
+            reasoning_effort: "low",
+            include_reasoning: false,
+            temperature: 0.8,
+            max_completion_tokens: 500,
+            stream: false
+          })
+        }
+      );
+    } finally {
+      clearTimeout(timeout);
+    }
 
     if (!response.ok) {
       const error = await response.text();
       console.error("Groq-fout:", response.status, error);
       return res.status(502).json({ error: "AI tijdelijk niet beschikbaar." });
-    }
-
-    // Controleer ook na het AI-verzoek of de 4 minuten voorbij zijn
-    if (Date.now() - conversationStartedAt >= CHAT_DURATION) {
-      return res.status(403).json({
-        finished: true,
-        message: "Het gesprek is afgelopen. Iedereen mag de cirkel verlaten via het uitgangsbordje."
-      });
     }
 
     const data = await response.json();
@@ -234,12 +222,16 @@ Schrijf geen uitleg, geen analyse en geen Engelse tekst.
     }
 
     console.log("AI-antwoord:", character, reply);
-
-    res.json({ reply });
+    return res.json({ reply });
 
   } catch (error) {
+    if (error.name === "AbortError") {
+      console.error("Groq-aanvraag timeout.");
+      return res.status(504).json({ error: "AI-aanvraag duurde te lang." });
+    }
+
     console.error("Serverfout:", error);
-    res.status(500).json({ error: "Serverfout." });
+    return res.status(500).json({ error: "Serverfout." });
   }
 });
 
